@@ -34,30 +34,26 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <Link href="/">
-          <a className="flex items-center gap-2 group">
-            <div className="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
-              <Barcode className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-heading font-bold text-lg text-foreground tracking-tight">
-                ShopMyBarcode
-              </span>
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                Official Retail Codes
-              </span>
-            </div>
-          </a>
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
+            <Barcode className="h-6 w-6 text-primary" />
+          </div>
+          <div className="flex flex-col leading-none">
+            <span className="font-heading font-bold text-lg text-foreground tracking-tight">
+              ShopMyBarcode
+            </span>
+            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+              Official Retail Codes
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
           <div className="flex items-center gap-6">
             {navLinks.map((link) => (
-              <Link key={link.name} href={link.href}>
-                <a className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-                  {link.name}
-                </a>
+              <Link key={link.name} href={link.href} className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+                {link.name}
               </Link>
             ))}
           </div>
@@ -91,13 +87,13 @@ export function Navbar() {
           >
             <div className="container px-4 py-6 flex flex-col gap-4">
               {navLinks.map((link) => (
-                <Link key={link.name} href={link.href}>
-                  <a
-                    className="text-base font-medium text-foreground py-2 border-b border-border/50"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {link.name}
-                  </a>
+                <Link 
+                  key={link.name} 
+                  href={link.href}
+                  className="text-base font-medium text-foreground py-2 border-b border-border/50"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.name}
                 </Link>
               ))}
               <Button className="w-full mt-4">Apply for Barcode</Button>

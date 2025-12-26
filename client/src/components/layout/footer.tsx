@@ -31,20 +31,20 @@ export function Footer() {
           <div>
             <h4 className="font-heading font-bold text-foreground mb-6">Services</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><Link href="/"><a className="hover:text-primary transition-colors">Retail Barcodes</a></Link></li>
-              <li><Link href="/"><a className="hover:text-primary transition-colors">QR Code Generation</a></Link></li>
-              <li><Link href="/"><a className="hover:text-primary transition-colors">Product Verification</a></Link></li>
-              <li><Link href="/"><a className="hover:text-primary transition-colors">ISBN Codes</a></Link></li>
+              <li><Link href="/" className="hover:text-primary transition-colors">Retail Barcodes</Link></li>
+              <li><Link href="/" className="hover:text-primary transition-colors">QR Code Generation</Link></li>
+              <li><Link href="/" className="hover:text-primary transition-colors">Product Verification</Link></li>
+              <li><Link href="/" className="hover:text-primary transition-colors">ISBN Codes</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-heading font-bold text-foreground mb-6">Company</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><Link href="/about"><a className="hover:text-primary transition-colors">About Us</a></Link></li>
-              <li><Link href="/contact"><a className="hover:text-primary transition-colors">Contact Us</a></Link></li>
-              <li><Link href="/terms"><a className="hover:text-primary transition-colors">Terms & Conditions</a></Link></li>
-              <li><Link href="/privacy"><a className="hover:text-primary transition-colors">Privacy Policy</a></Link></li>
+              <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link href="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
+              <li><Link href="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link></li>
+              <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
 
@@ -70,8 +70,8 @@ export function Footer() {
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} ShopMyBarcode. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link href="/terms"><a className="hover:text-foreground">Terms</a></Link>
-            <Link href="/privacy"><a className="hover:text-foreground">Privacy</a></Link>
+            <Link href="/terms" className="hover:text-foreground">Terms</Link>
+            <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
           </div>
         </div>
       </div>

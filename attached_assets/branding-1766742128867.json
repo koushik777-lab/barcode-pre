@@ -1,0 +1,133 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "sans-serif",
+      "count": 75
+    },
+    {
+      "family": "-apple-system",
+      "count": 55
+    },
+    {
+      "family": "BlinkMacSystemFont",
+      "count": 55
+    },
+    {
+      "family": "Segoe UI",
+      "count": 55
+    },
+    {
+      "family": "Roboto",
+      "count": 55
+    },
+    {
+      "family": "Helvetica Neue",
+      "count": 55
+    },
+    {
+      "family": "Arial",
+      "count": 50
+    },
+    {
+      "family": "Noto Sans",
+      "count": 50
+    },
+    {
+      "family": "Apple Color Emoji",
+      "count": 50
+    },
+    {
+      "family": "Segoe UI Emoji",
+      "count": 50
+    }
+  ],
+  "colors": {
+    "primary": "#FA9252",
+    "accent": "#007615",
+    "background": "#FFFFFF",
+    "textPrimary": "#333333",
+    "link": "#007615"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "-apple-system",
+      "heading": "-apple-system"
+    },
+    "fontStacks": {
+      "body": [
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "Arial",
+        "Noto Sans",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ],
+      "heading": [
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "Arial",
+        "Noto Sans",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ],
+      "paragraph": [
+        "Reem Kufi Fun",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "16px",
+      "h2": "32px",
+      "body": "14px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "10px"
+  },
+  "components": {},
+  "images": {
+    "logo": "https://shopmybarcode.com/wp-content/uploads/2023/08/cropped-cropped-barcodelogo-1.jpg",
+    "favicon": "https://shopmybarcode.com/wp-content/uploads/2023/08/cropped-cropped-barcodelogo-1-1-32x32.jpg",
+    "ogImage": "https://shopmybarcode.com/wp-content/uploads/2023/09/50-off.png"
+  },
+  "__framework_hints": [
+    "WordPress 6.9"
+  ],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Strong indicators: header logo linking to homepage, header location, visible, src contains logo, class contains logo, src contains brand name \"shopmybarcode\", reasonable size. Score: 106 (clear winner by 33 points)",
+    "confidence": 0.9
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "confidence": 0
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}

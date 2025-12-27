@@ -1,92 +1,119 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { AdvancedHero } from "@/components/home/advanced-hero";
-import { AnimatedFeatures } from "@/components/home/animated-features";
-import { StatsSection } from "@/components/home/stats-section";
+import { PremiumHero } from "@/components/home/premium-hero";
+import { PremiumServices } from "@/components/home/premium-services";
 import { TestimonialCarousel } from "@/components/home/testimonial-carousel";
+import { StatsSection } from "@/components/home/stats-section";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative">
       <Navbar />
-      <main>
-        <AdvancedHero />
-        <AnimatedFeatures />
-        <StatsSection />
-        <TestimonialCarousel />
+      <main className="relative z-10">
+        <PremiumHero />
+        <PremiumServices />
 
-        {/* How It Works */}
-        <section className="py-24 bg-background">
+        {/* Process Section */}
+        <section className="relative py-32 overflow-hidden">
           <div className="container mx-auto px-4 md:px-6">
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-heading font-bold text-center mb-16"
+              className="text-5xl md:text-6xl font-heading font-bold text-center mb-20 text-glow"
             >
-              Four Steps to <span className="gradient-text">Success</span>
+              4 Steps to <span className="text-glow-strong">Success</span>
             </motion.h2>
 
-            <div className="grid md:grid-cols-4 gap-6 relative">
-              {/* Connection Line */}
-              <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0 -translate-y-1/2" />
-
+            <div className="grid md:grid-cols-4 gap-6">
               {[
-                { num: 1, title: "Apply Online", desc: "Simple 2-minute form" },
-                { num: 2, title: "Get Verified", desc: "Quick product check" },
-                { num: 3, title: "Instant Delivery", desc: "Barcodes via email" },
-                { num: 4, title: "Go Live", desc: "Start selling worldwide" }
+                { num: 1, title: "Apply Online", desc: "2-minute form", icon: "📝" },
+                { num: 2, title: "Get Verified", desc: "Quick check", icon: "✓" },
+                { num: 3, title: "Instant Delivery", desc: "Email within 24H", icon: "⚡" },
+                { num: 4, title: "Go Live", desc: "Start selling", icon: "🚀" }
               ].map((step, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="relative"
+                  whileHover={{ y: -8 }}
+                  className="glass-premium p-8 rounded-2xl border border-orange-500/30 hover:border-orange-500/60 text-center hover-glow"
                 >
-                  <div className="glass-card p-8 rounded-2xl text-center h-full">
-                    <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-2xl font-heading font-bold text-white relative z-10">
-                      {step.num}
-                    </div>
-                    <h3 className="font-heading font-bold text-xl mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm">{step.desc}</p>
-                  </div>
+                  <div className="text-5xl font-heading font-bold text-orange-400 mb-4">{step.num}</div>
+                  <h3 className="text-xl font-heading font-bold mb-2 text-white">{step.title}</h3>
+                  <p className="text-gray-400 text-sm">{step.desc}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-32 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-orange-400 to-primary opacity-90" />
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20" />
+        <StatsSection />
+        <TestimonialCarousel />
 
-          <div className="container mx-auto px-4 md:px-6 relative z-10">
-            <motion.div
+        {/* Industries Section */}
+        <section className="relative py-32 overflow-hidden">
+          <div className="container mx-auto px-4 md:px-6">
+            <motion.h2
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center text-white max-w-3xl mx-auto"
+              className="text-5xl md:text-6xl font-heading font-bold text-center mb-20 text-glow"
             >
-              <h2 className="text-4xl md:text-6xl font-heading font-bold mb-6">
-                Ready to Get Your Barcodes?
-              </h2>
-              <p className="text-xl text-white/90 mb-10">
-                Join thousands of businesses that trust Shop My Barcode for authentic, globally-accepted barcodes.
-              </p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-3 px-12 py-4 bg-white text-primary font-bold text-lg rounded-full shadow-2xl hover:shadow-3xl transition-all"
-              >
-                Start Now <ArrowRight className="h-5 w-5" />
-              </motion.button>
+              Industries We <span className="text-glow-strong">Serve</span>
+            </motion.h2>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                "E-commerce", "Manufacturing", "Startups", "Retail",
+                "Food & Beverage", "Beauty & Personal Care", "Logistics", "Healthcare"
+              ].map((industry, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="glass-premium p-6 rounded-xl border border-orange-500/20 text-center hover:border-orange-500/50 hover-glow"
+                >
+                  <p className="font-bold text-white">{industry}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="relative py-40 overflow-hidden">
+          <div className="premium-bg opacity-50" />
+
+          <div className="container mx-auto px-4 md:px-6 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-4xl mx-auto"
+            >
+              <div className="glass-premium p-16 rounded-3xl border border-orange-500/40 text-center glow-border-strong">
+                <h2 className="text-6xl md:text-7xl font-heading font-bold mb-8 text-glow">
+                  Ready to <span className="text-glow-strong">Transform</span> Your Business?
+                </h2>
+                <p className="text-xl text-gray-300 mb-12 leading-relaxed">
+                  Join 5000+ businesses that trust Shop My Barcode for authentic, globally-accepted barcodes. Instant delivery, lifetime validity, zero fees.
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="glass-premium px-12 py-6 rounded-full font-bold text-lg text-white bg-gradient-to-r from-orange-500 to-orange-600 border border-orange-400/50 hover:glow-border-strong inline-flex items-center gap-3"
+                >
+                  Start Your Journey <ArrowRight className="h-6 w-6" />
+                </motion.button>
+              </div>
             </motion.div>
           </div>
         </section>

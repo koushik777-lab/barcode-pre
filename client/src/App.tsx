@@ -15,7 +15,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/verify" component={Verify} />
-      <Route path="/contact" component={Contact} />
+      {/* <Route path="/contact" component={Contact} /> */}
       <Route component={NotFound} />
     </Switch>
   );

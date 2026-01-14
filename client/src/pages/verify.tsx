@@ -58,11 +58,11 @@ export default function Verify() {
             >
               <div className="relative">
                 <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                  <Barcode className="h-5 w-5" />
+                  {/* <Barcode className="h-5 w-5" /> */}
                 </div>
                 <input
                   type="text"
-                  placeholder="Enter barcode (12 or 13 digits)"
+                  placeholder="Enter barcode (13 digits)"
                   value={barcode}
                   onChange={(e) => {
                     const val = e.target.value.replace(/\D/g, '');
@@ -141,7 +141,7 @@ export default function Verify() {
                 {
                   num: "01",
                   title: "Enter Barcode",
-                  desc: "Input the 12 or 13-digit barcode you want to verify."
+                  desc: "Input the 13-digit barcode you want to verify."
                 },
                 {
                   num: "02",

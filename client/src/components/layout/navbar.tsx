@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Barcode, Phone, ShoppingCart } from "lucide-react";
+import { Menu, X, Phone, ShoppingCart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -27,16 +27,20 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300 border-b",
+        "transition-all duration-300 z-50",
         scrolled
-          ? "bg-white/80 backdrop-blur-md border-border/50 shadow-sm py-3"
-          : "bg-transparent border-transparent py-5"
+          ? "fixed top-2 left-4 right-4 glass-premium py-3 rounded-full"
+          : "fixed top-0 left-0 right-0 bg-transparent border-transparent py-5 border-b"
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
-            <Barcode className="h-6 w-6 text-primary" />
+          <div className="relative h-10 w-10 overflow-hidden rounded-lg group-hover:opacity-90 transition-opacity">
+            <img
+              src="/barco.jpg"
+              alt="ShopMyBarcode Logo"
+              className="h-full w-full object-cover"
+            />
           </div>
           <div className="flex flex-col leading-none">
             <span className="font-heading font-bold text-lg text-foreground tracking-tight">
@@ -87,8 +91,8 @@ export function Navbar() {
           >
             <div className="container px-4 py-6 flex flex-col gap-4">
               {navLinks.map((link) => (
-                <Link 
-                  key={link.name} 
+                <Link
+                  key={link.name}
                   href={link.href}
                   className="text-base font-medium text-foreground py-2 border-b border-border/50"
                   onClick={() => setIsOpen(false)}

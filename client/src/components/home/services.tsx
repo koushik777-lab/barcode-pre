@@ -3,32 +3,32 @@ import { motion } from "framer-motion";
 
 const features = [
   {
-    icon: <Barcode className="h-8 w-8 text-primary" />,
+    icon: Barcode,
     title: "Retail Barcodes (EAN/UPC)",
     description: "Official EAN-13 and UPC-A barcodes accepted by retailers worldwide. Perfect for products sold in stores."
   },
   {
-    icon: <QrCode className="h-8 w-8 text-secondary" />,
+    icon: QrCode,
     title: "Dynamic QR Codes",
     description: "Connect physical products to digital experiences. Edit destination URLs anytime without reprinting."
   },
   {
-    icon: <Zap className="h-8 w-8 text-amber-500" />,
+    icon: Zap,
     title: "Instant Delivery",
     description: "Receive your barcode numbers and high-resolution images via email immediately after purchase."
   },
   {
-    icon: <ShieldCheck className="h-8 w-8 text-blue-500" />,
+    icon: ShieldCheck,
     title: "Lifetime Validity",
     description: "One-time payment. No annual fees, no renewal charges. Your barcodes are yours forever."
   },
   {
-    icon: <Globe className="h-8 w-8 text-purple-500" />,
+    icon: Globe,
     title: "Global Acceptance",
     description: "Our barcodes are verified and accepted by retailers across India and internationally."
   },
   {
-    icon: <BookOpen className="h-8 w-8 text-rose-500" />,
+    icon: BookOpen,
     title: "ISBN Book Codes",
     description: "Specialized ISBN barcodes for authors and publishers to sell books in physical and online stores."
   }
@@ -46,7 +46,7 @@ export function Services() {
             We provide comprehensive barcode solutions tailored for businesses of all sizes, from startups to established enterprises.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
@@ -55,17 +55,55 @@ export function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-background p-8 rounded-2xl border border-border hover:shadow-lg hover:border-primary/20 transition-all group"
+              className="group h-[300px]"
+              style={{ perspective: "1000px" }}
             >
-              <div className="mb-6 p-4 bg-muted rounded-xl inline-block group-hover:bg-primary/10 transition-colors">
-                {feature.icon}
+              <div
+                className="relative w-full h-full transition-all duration-500 group-hover:[transform:rotateY(180deg)]"
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                {/* Front Face */}
+                <div
+                  className="absolute inset-0"
+                  style={{ backfaceVisibility: "hidden" }}
+                >
+                  <div className="h-full bg-slate-900 border border-white/5 rounded-2xl flex flex-col items-center justify-center text-center p-8 shadow-xl hover:shadow-2xl hover:border-orange-500/30 transition-all">
+                    <div className="mb-6 p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-500 group-hover:scale-110 transition-transform duration-300">
+                      <feature.icon className="h-10 w-10 text-orange-500" />
+                    </div>
+                    <h3 className="font-heading font-bold text-xl mb-2 text-white">{feature.title}</h3>
+                    <p className="text-orange-500/60 text-sm mt-4 font-medium opacity-80 group-hover:opacity-100 transition-opacity">
+                      Hover to learn more
+                    </p>
+                  </div>
+                </div>
+
+                {/* Back Face */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    transform: "rotateY(180deg)"
+                  }}
+                >
+                  <div className="h-full bg-slate-900 border border-orange-500/30 rounded-2xl flex flex-col items-center justify-center text-center p-8 shadow-xl relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-50" />
+                    <div className="relative z-10">
+                      <h3 className="font-heading font-bold text-xl mb-4 text-white">{feature.title}</h3>
+                      <p className="text-gray-300 leading-relaxed text-sm md:text-base">
+                        {feature.description}
+                      </p>
+                      <div className="mt-6 text-orange-500">
+                        <feature.icon className="h-6 w-6 mx-auto opacity-50" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="font-heading font-bold text-xl mb-3 text-foreground">{feature.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </section >
   );
 }

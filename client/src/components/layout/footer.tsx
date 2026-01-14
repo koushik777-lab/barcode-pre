@@ -9,7 +9,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="bg-primary/10 p-2 rounded-lg">
-                <Barcode className="h-6 w-6 text-primary" />
+                <img src="/barco.jpg" alt="ShopMyBarcode Logo" className="h-6 w-6 object-cover rounded-sm" />
               </div>
               <span className="font-heading font-bold text-xl text-foreground">
                 ShopMyBarcode

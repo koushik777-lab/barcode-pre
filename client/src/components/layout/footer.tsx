@@ -12,17 +12,17 @@ export function Footer() {
                 <img src="/barco.jpg" alt="ShopMyBarcode Logo" className="h-6 w-6 object-cover rounded-sm" />
               </div>
               <span className="font-heading font-bold text-xl text-foreground">
-                ShopMyBarcode
+                Shop My Barcode
               </span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Premier provider of high-quality private barcodes. We help businesses streamline product identification with ease and efficiency.
             </p>
             <div className="flex items-center gap-4 pt-2">
-              <a href="#" className="p-2 bg-white border border-border rounded-full text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a href="https://www.facebook.com/profile.php?id=61559351273591" target="blank" className="p-2 bg-white border border-border rounded-full text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Facebook className="h-4 w-4" />
               </a>
-              <a href="#" className="p-2 bg-white border border-border rounded-full text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a href="https://www.instagram.com/shop_my_barcode/" target="blank" className="p-2 bg-white border border-border rounded-full text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Instagram className="h-4 w-4" />
               </a>
             </div>
@@ -53,7 +53,7 @@ export function Footer() {
             <ul className="space-y-4 text-sm text-muted-foreground">
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary shrink-0" />
-                <span>123 Business Park, Sector 45<br />Mumbai, Maharashtra 400001</span>
+                <span>2nd Floor, 23A, Royd Street, Kolkata - 700016<br />  (Opp. Lazzat Resturant) <br /> West Bengal, India</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-primary shrink-0" />
@@ -68,7 +68,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} ShopMyBarcode. All rights reserved.</p>
+          <p>© 2021 ShopMyBarcode. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="/terms" className="hover:text-foreground">Terms</Link>
             <Link href="/privacy" className="hover:text-foreground">Privacy</Link>

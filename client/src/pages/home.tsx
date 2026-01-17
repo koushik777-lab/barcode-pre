@@ -36,7 +36,11 @@ function SectionLoader() {
   );
 }
 
+import { useState } from "react";
+import { ApplyBarcodeModal } from "@/components/apply-barcode-modal";
+
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background text-foreground relative">
       <Navbar />
@@ -98,6 +102,7 @@ export default function Home() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsModalOpen(true)}
                   className="glass-premium px-12 py-6 rounded-full font-bold text-lg text-white bg-gradient-to-r from-orange-500 to-orange-600 border border-orange-400/50 hover:glow-border-strong inline-flex items-center gap-3 relative z-10"
                 >
                   Start Your Journey <ArrowRight className="h-6 w-6" />
@@ -106,6 +111,7 @@ export default function Home() {
             </AnimatedSection>
           </div>
         </section>
+        <ApplyBarcodeModal open={isModalOpen} onOpenChange={setIsModalOpen} />
         <Footer />
       </main>
     </div >

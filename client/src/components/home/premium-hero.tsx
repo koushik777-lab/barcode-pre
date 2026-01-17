@@ -4,8 +4,12 @@ import { ArrowRight, Barcode, Sparkles, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
 import { GradientText } from "@/components/ui/gradient-text";
+import { useState } from "react";
+import { ApplyBarcodeModal } from "@/components/apply-barcode-modal";
 
 export function PremiumHero() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -86,6 +90,7 @@ export function PremiumHero() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsModalOpen(true)}
                   className="glass-premium px-8 py-4 rounded-full font-bold text-lg text-white bg-gradient-to-r from-orange-500 to-orange-600 border border-orange-400/50 hover:glow-border-strong"
                 >
                   Get Barcodes <ArrowRight className="inline ml-2 h-5 w-5" />
@@ -93,6 +98,7 @@ export function PremiumHero() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsModalOpen(true)}
                   className="glass-premium px-8 py-4 rounded-full font-bold text-lg border border-orange-500/30 hover:border-orange-500/60 transition-all"
                 >
                   Schedule Demo
@@ -187,8 +193,8 @@ export function PremiumHero() {
         </div>
       </div>
 
-
-
+      <ApplyBarcodeModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </section>
   );
 }
+

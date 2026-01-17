@@ -1,38 +1,76 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { IBarcode, Barcode, IApplication, Application, User, IUser } from "./models";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getUser(id: string): Promise<IUser | null>;
+  getUserByUsername(username: string): Promise<IUser | null>;
+  createUser(user: Partial<IUser>): Promise<IUser>;
+
+  // Barcode methods
+  createBarcode(barcode: Partial<IBarcode>): Promise<IBarcode>;
+  getBarcodeByCode(code: string): Promise<IBarcode | null>;
+  getBarcodeById(id: string): Promise<IBarcode | null>;
+  getAllBarcodes(): Promise<IBarcode[]>;
+  updateBarcode(id: string, barcode: Partial<IBarcode>): Promise<IBarcode | null>;
+  deleteBarcode(id: string): Promise<boolean>;
+
+  // Application methods
+  createApplication(app: Partial<IApplication>): Promise<IApplication>;
+  getAllApplications(): Promise<IApplication[]>;
+  updateApplicationStatus(id: string, status: 'Pending' | 'Approved' | 'Rejected'): Promise<IApplication | null>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class MongoStorage implements IStorage {
+  async getUser(id: string): Promise<IUser | null> {
+    return User.findById(id);
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getUserByUsername(username: string): Promise<IUser | null> {
+    return User.findOne({ username });
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createUser(user: Partial<IUser>): Promise<IUser> {
+    const newUser = new User(user);
+    return newUser.save();
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async createBarcode(barcode: Partial<IBarcode>): Promise<IBarcode> {
+    const newBarcode = new Barcode(barcode);
+    return newBarcode.save();
+  }
+
+  async getBarcodeByCode(code: string): Promise<IBarcode | null> {
+    return Barcode.findOne({ barcode: code });
+  }
+
+  async getBarcodeById(id: string): Promise<IBarcode | null> {
+    return Barcode.findById(id);
+  }
+
+  async getAllBarcodes(): Promise<IBarcode[]> {
+    return Barcode.find().sort({ createdAt: -1 });
+  }
+
+  async updateBarcode(id: string, barcode: Partial<IBarcode>): Promise<IBarcode | null> {
+    return Barcode.findByIdAndUpdate(id, barcode, { new: true });
+  }
+
+  async deleteBarcode(id: string): Promise<boolean> {
+    const result = await Barcode.findByIdAndDelete(id);
+    return !!result;
+  }
+
+  async createApplication(app: Partial<IApplication>): Promise<IApplication> {
+    const newApp = new Application(app);
+    return newApp.save();
+  }
+
+  async getAllApplications(): Promise<IApplication[]> {
+    return Application.find().sort({ createdAt: -1 });
+  }
+
+  async updateApplicationStatus(id: string, status: 'Pending' | 'Approved' | 'Rejected'): Promise<IApplication | null> {
+    return Application.findByIdAndUpdate(id, { status }, { new: true });
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new MongoStorage();

@@ -1,190 +1,333 @@
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import { motion } from "framer-motion";
-import { Search, Barcode, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Navbar } from "@/components/layout/navbar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
-export default function Verify() {
-  const [barcode, setBarcode] = useState("");
-  const [searched, setSearched] = useState(false);
-  const [isValid, setIsValid] = useState(false);
-  const [loading, setLoading] = useState(false);
+interface Barcode {
+  barcode: string;
+  productName: string;
+  brandName: string;
+  country?: string;
+  category: string;
+  description?: string;
+  price: number;
+  status: string;
+
+  // Clothes
+  color?: string;
+  material?: string;
+  size?: string;
+  imageUrl?: string;
+  barcodeImageUrl?: string;
+
+  // Extended fields
+  language?: string;
+  websiteLink?: string;
+  amazonLink?: string;
+  sku?: string;
+  modelNumber?: string;
+  issueDate?: string;
+  createdAt?: string;
+
+  // Size/Weight
+  width?: string;
+  height?: string;
+  length?: string;
+  weight?: string;
+  fluid?: string;
+  pieces?: string;
+
+  // Nutrition
+  servingSize?: string;
+  servingsPer?: string;
+  calories?: string;
+  fatCalories?: string;
+  totalFat?: string;
+  saturatedFat?: string;
+  transFat?: string;
+  cholesterol?: string;
+  sodium?: string;
+  potassium?: string;
+  totalCarbohydrate?: string;
+  dietaryFiber?: string;
+  sugar?: string;
+  protein?: string;
+  ingredients?: string;
+
+  // Publication
+  author?: string;
+  pageCount?: string;
+  binding?: string;
+  releaseYear?: string;
+  published?: string;
+  format?: string;
+  runTime?: string;
+}
+
+export default function VerifyPage() {
+  const [searchCode, setSearchCode] = useState("");
+  const [submittedCode, setSubmittedCode] = useState("");
+
+  const { data: barcode, isError, isLoading } = useQuery<Barcode>({
+    queryKey: [`/api/barcodes/${submittedCode}`],
+    enabled: !!submittedCode,
+    retry: false
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!barcode.trim()) return;
-    
-    setLoading(true);
-    // Simulate search
-    setTimeout(() => {
-      setIsValid(barcode.length === 12 || barcode.length === 13);
-      setSearched(true);
-      setLoading(false);
-    }, 800);
+    setSubmittedCode(searchCode);
   };
 
+  // Helper to safely format values
+  const formatValue = (key: keyof Barcode, value: any) => {
+    if (value === undefined || value === null || value === "") return null;
+    if (key === 'price') return `₹${value}`;
+    if (key === 'issueDate') return new Date(value).toLocaleDateString();
+    return value;
+  };
+
+  // Define groups of fields to display
+  const fieldGroups = [
+    {
+      title: "Product Details",
+      fields: [
+        { label: "Product Name", key: "productName" },
+        { label: "Brand", key: "brandName" },
+        { label: "Product Code", key: "barcode" },
+        { label: "Country", key: "country" },
+        { label: "Language", key: "language" },
+        { label: "Category", key: "category" },
+        { label: "Product Description", key: "description" },
+        { label: "Model Number", key: "modelNumber" },
+        { label: "SKU", key: "sku" },
+        { label: "Price", key: "price" },
+        { label: "Website", key: "websiteLink" },
+        { label: "Amazon Link", key: "amazonLink" },
+        { label: "Date of Registration", key: "issueDate" },
+        { label: "Status", key: "status" },
+      ]
+    },
+    {
+      title: "Clothes Details",
+      fields: [
+        { label: "Color", key: "color" },
+        { label: "Material", key: "material" },
+        { label: "Size", key: "size" },
+      ]
+    },
+    {
+      title: "Dimensions & Unit",
+      fields: [
+        { label: "Width", key: "width" },
+        { label: "Height", key: "height" },
+        { label: "Length", key: "length" },
+        { label: "Weight", key: "weight" },
+        { label: "Fluid", key: "fluid" },
+        { label: "Pieces", key: "pieces" },
+      ]
+    },
+    {
+      title: "Nutrition Information",
+      fields: [
+        { label: "Serving Size", key: "servingSize" },
+        { label: "Servings Per Container", key: "servingsPer" },
+        { label: "Calories", key: "calories" },
+        { label: "Fat Calories", key: "fatCalories" },
+        { label: "Total Fat", key: "totalFat" },
+        { label: "Saturated Fat", key: "saturatedFat" },
+        { label: "Trans Fat", key: "transFat" },
+        { label: "Cholesterol", key: "cholesterol" },
+        { label: "Sodium", key: "sodium" },
+        { label: "Potassium", key: "potassium" },
+        { label: "Total Carbohydrate", key: "totalCarbohydrate" },
+        { label: "Dietary Fiber", key: "dietaryFiber" },
+        { label: "Sugar", key: "sugar" },
+        { label: "Protein", key: "protein" },
+        { label: "Ingredients", key: "ingredients" },
+      ]
+    },
+    {
+      title: "Publication / Media",
+      fields: [
+        { label: "Author", key: "author" },
+        { label: "Page Count", key: "pageCount" },
+        { label: "Binding", key: "binding" },
+        { label: "Release Year", key: "releaseYear" },
+        { label: "Published", key: "published" },
+        { label: "Format", key: "format" },
+        { label: "Run Time", key: "runTime" },
+      ]
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground font-sans relative overflow-hidden">
+      <div className="premium-bg opacity-30" />
       <Navbar />
-      <main className="pt-32 pb-20">
-        {/* Hero */}
-        <section className="py-20 bg-primary/5">
-          <div className="container mx-auto px-4 md:px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center max-w-3xl mx-auto"
-            >
-              <h1 className="font-heading font-bold text-4xl md:text-5xl mb-6">
-                Verify Your <span className="text-primary">Barcode</span>
-              </h1>
-              <p className="text-xl text-muted-foreground">
-                Check if a barcode is authentic and view its product details.
-              </p>
-            </motion.div>
-          </div>
-        </section>
 
-        {/* Search Section */}
-        <section className="py-20">
-          <div className="container mx-auto px-4 md:px-6 max-w-2xl">
-            <motion.form
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              onSubmit={handleSearch}
-              className="space-y-6"
+      <main className="relative z-10 container mx-auto px-4 py-24 flex flex-col items-center">
+
+        <div className="w-full max-w-3xl text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 bg-orange-500/10 text-orange-400 border border-orange-500/20 px-6 py-2 rounded-full text-sm font-semibold mb-8 backdrop-blur-md"
+          >
+            <ShieldCheck size={20} />
+            Global Verification Portal
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-6xl font-heading font-bold text-white mb-6 text-glow"
+          >
+            Verify <span className="text-orange-500">Authenticity</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-xl text-gray-400 leading-relaxed"
+          >
+            Enter your product Barcode or GTIN to instantly validate its registration status against our global secure database.
+          </motion.p>
+        </div>
+
+        {/* Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+          className="w-full max-w-xl mb-16 relative"
+        >
+          <div className="absolute inset-0 bg-orange-500/20 blur-2xl rounded-full" />
+          <form onSubmit={handleSearch} className="flex gap-2 relative z-10 p-2 bg-white/5 border border-white/10 rounded-xl backdrop-blur-xl">
+            <Input
+              placeholder="Enter Barcode / GTIN..."
+              className="h-14 text-lg bg-transparent border-none text-white placeholder:text-gray-500 focus-visible:ring-0"
+              value={searchCode}
+              onChange={(e) => setSearchCode(e.target.value)}
+            />
+            <Button
+              type="submit"
+              className="h-14 px-10 bg-orange-600 hover:bg-orange-500 text-white text-lg rounded-lg transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(234,88,12,0.5)]"
             >
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                  {/* <Barcode className="h-5 w-5" /> */}
-                </div>
-                <input
-                  type="text"
-                  placeholder="Enter barcode (13 digits)"
-                  value={barcode}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, '');
-                    if (val.length <= 13) setBarcode(val);
-                  }}
-                  className="w-full pl-12 pr-4 py-4 border-2 border-border rounded-xl focus:outline-none focus:border-primary transition-colors text-lg"
-                />
+              <Search size={20} className="mr-2" /> Verify
+            </Button>
+          </form>
+        </motion.div>
+
+        {/* Results Area */}
+        <div className="w-full max-w-4xl">
+          {isLoading && (
+            <div className="flex flex-col items-center gap-4 text-orange-400">
+              <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+              <p>Searching Registry...</p>
+            </div>
+          )}
+
+          {isError && (
+            <div className="text-center p-8 bg-red-50 rounded-lg border border-red-200">
+              <h3 className="text-red-600 font-bold text-lg mb-2">Product Not Found</h3>
+              <p className="text-gray-600">The barcode <strong>{submittedCode}</strong> does not exist in our registry.</p>
+            </div>
+          )}
+
+          {barcode && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-lg font-bold text-gray-800 uppercase tracking-wide">Product Verification Details</h2>
+                {barcode.status === 'Active' && (
+                  <span className="bg-green-100 text-green-700 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-sm border border-green-200">
+                    Verified
+                  </span>
+                )}
               </div>
-              
-              <button
-                type="submit"
-                disabled={!barcode || loading}
-                className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02]"
-              >
-                {loading ? "Searching..." : "Verify Barcode"}
-              </button>
-            </motion.form>
 
-            {/* Results */}
-            {searched && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className={`mt-12 p-8 rounded-2xl border-2 ${
-                  isValid
-                    ? "bg-secondary/5 border-secondary"
-                    : "bg-red-50 border-red-300"
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 mt-1">
-                    {isValid ? (
-                      <CheckCircle className="h-8 w-8 text-secondary" />
+              <div className="divide-y divide-gray-100">
+                {/* Product Image */}
+                <div className="grid grid-cols-1 md:grid-cols-12">
+                  <div className="md:col-span-4 bg-gray-50/50 p-4 border-r border-gray-100 font-semibold text-gray-700 text-sm uppercase tracking-wide flex items-center">
+                    Product Image
+                  </div>
+                  <div className="md:col-span-8 p-4 flex justify-start items-center min-h-[150px]">
+                    {barcode.imageUrl ? (
+                      <img
+                        src={barcode.imageUrl}
+                        alt="Product"
+                        className="h-48 w-48 object-contain border border-gray-100 rounded-sm"
+                      />
                     ) : (
-                      <AlertCircle className="h-8 w-8 text-red-500" />
+                      <span className="text-gray-400 italic">No image available</span>
                     )}
                   </div>
-                  <div>
-                    <h3 className="font-heading font-bold text-2xl mb-2">
-                      {isValid ? "Valid Barcode" : "Invalid Barcode"}
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      {isValid
-                        ? `Barcode ${barcode} is valid and registered in our system.`
-                        : "This barcode doesn't match our records or is invalid."}
-                    </p>
-                    
-                    {isValid && (
-                      <div className="space-y-4 pt-6 border-t border-secondary/20">
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm text-muted-foreground mb-1">Barcode</p>
-                            <p className="font-mono font-bold text-lg">{barcode}</p>
+                </div>
+
+                {/* Barcode Image */}
+                <div className="grid grid-cols-1 md:grid-cols-12">
+                  <div className="md:col-span-4 bg-gray-50/50 p-4 border-r border-gray-100 font-semibold text-gray-700 text-sm uppercase tracking-wide flex items-center">
+                    Bar Code
+                  </div>
+                  <div className="md:col-span-8 p-4 flex justify-start items-center min-h-[100px]">
+                    {barcode.barcodeImageUrl ? (
+                      <img
+                        src={barcode.barcodeImageUrl}
+                        alt="Barcode"
+                        className="h-24 w-auto object-contain"
+                      />
+                    ) : (
+                      <span className="text-gray-400 italic">No barcode image available</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Dynamic Fields */}
+                {fieldGroups.map((group, groupIndex) => {
+                  // Filter fields that have a value
+                  const validFields = group.fields.filter(field => {
+                    const val = barcode[field.key as keyof Barcode];
+                    return val !== undefined && val !== null && val !== "";
+                  });
+
+                  // If no fields in this group are valid, skip the whole group
+                  if (validFields.length === 0) return null;
+
+                  return (
+                    <div key={groupIndex} className="border-t-4 border-gray-100 first:border-0">
+                      {/* Optional Group Header - simplified to just show fields for now to match request strictness,
+                          but grouping logic helps organization in code.
+                          We can choose to just flatten or render.
+                          User said: "only this things are visiable other wise no things are visibale"
+                          So showing headers might be clutter if they only have 1 item.
+                          But let's stick to the list format requested.
+                      */}
+
+                      {validFields.map((field, fieldIndex) => (
+                        <div key={`${groupIndex}-${fieldIndex}`} className="grid grid-cols-1 md:grid-cols-12 border-t first:border-t-0 border-gray-100">
+                          <div className="md:col-span-4 bg-gray-50/50 p-4 border-r border-gray-100 font-semibold text-gray-700 text-sm uppercase tracking-wide flex items-center">
+                            {field.label}
                           </div>
-                          <div>
-                            <p className="text-sm text-muted-foreground mb-1">Status</p>
-                            <p className="font-bold text-secondary">Active</p>
+                          <div className="md:col-span-8 p-4 text-gray-900 text-base font-medium flex items-center min-h-[56px] break-all">
+                            {formatValue(field.key as keyof Barcode, barcode[field.key as keyof Barcode])}
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </section>
-
-        {/* Info Section */}
-        <section className="py-20 bg-muted/30">
-          <div className="container mx-auto px-4 md:px-6">
-            <h2 className="font-heading font-bold text-3xl text-center mb-12">How Barcode Verification Works</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                {
-                  num: "01",
-                  title: "Enter Barcode",
-                  desc: "Input the 13-digit barcode you want to verify."
-                },
-                {
-                  num: "02",
-                  title: "Instant Verification",
-                  desc: "Our system checks the barcode against our verified database."
-                },
-                {
-                  num: "03",
-                  title: "View Results",
-                  desc: "Get immediate confirmation and product details if available."
-                }
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="text-center"
-                >
-                  <div className="text-4xl font-heading font-bold text-primary mb-4">{item.num}</div>
-                  <h3 className="font-heading font-bold text-xl mb-2">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.desc}</p>
-                </motion.div>
-              ))}
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-20 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-4 md:px-6 text-center">
-            <h2 className="font-heading font-bold text-3xl md:text-4xl mb-6">Ready for Your Own Barcode?</h2>
-            <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto mb-10">
-              Get instant, lifetime-valid barcodes for your products today.
-            </p>
-            <button className="bg-white text-primary font-bold px-8 py-4 rounded-full shadow-lg hover:bg-gray-100 transition-all hover:scale-105">
-              Apply Now
-            </button>
-          </div>
-        </section>
+          )}
+        </div>
       </main>
-      <Footer />
     </div>
   );
 }
+

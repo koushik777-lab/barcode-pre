@@ -1,245 +1,108 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Mail, Phone, MapPin, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
-import { useState } from "react";
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: ""
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate submission
-    setTimeout(() => {
-      setSubmitted(true);
-      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-      setTimeout(() => setSubmitted(false), 5000);
-    }, 500);
-  };
-
-  const contactInfo = [
-    {
-      icon: Phone,
-      title: "Phone",
-      details: "+91 62892 18265",
-      subtext: "Available 9 AM - 6 PM IST"
-    },
-    {
-      icon: Mail,
-      title: "Email",
-      details: "support@shopmybarcode.com",
-      subtext: "Respond within 24 hours"
-    },
-    {
-      icon: MapPin,
-      title: "Office",
-      details: "Mumbai, India",
-      subtext: "Pan-India service"
-    },
-    {
-      icon: Clock,
-      title: "Hours",
-      details: "Mon - Fri, 9 AM - 6 PM",
-      subtext: "Saturday: 10 AM - 2 PM"
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative font-sans">
+      <div className="premium-bg opacity-40" />
       <Navbar />
-      <main className="pt-32 pb-20">
-        {/* Hero */}
-        <section className="py-20 bg-primary/5">
-          <div className="container mx-auto px-4 md:px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center max-w-3xl mx-auto"
-            >
-              <h1 className="font-heading font-bold text-4xl md:text-5xl mb-6">
-                Get in <span className="text-primary">Touch</span>
-              </h1>
-              <p className="text-xl text-muted-foreground">
-                Have questions? Our team is here to help. Reach out and we'll respond as soon as possible.
-              </p>
-            </motion.div>
-          </div>
-        </section>
 
-        {/* Contact Info Cards */}
-        <section className="py-20">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-              {contactInfo.map((info, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="p-8 bg-white rounded-2xl border border-border text-center hover:border-primary/30 hover:shadow-lg transition-all"
-                >
-                  <div className="flex justify-center mb-4">
-                    <div className="p-4 bg-primary/10 rounded-xl">
-                      <info.icon className="h-6 w-6 text-primary" />
+      <section className="relative pt-40 pb-20 px-4 md:px-8">
+        <div className="container mx-auto max-w-4xl text-center relative z-10">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl md:text-7xl font-bold mb-6 font-heading text-glow"
+          >
+            Contact <span className="text-orange-500">Us</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-xl text-gray-300"
+          >
+            Have questions? Our global support team is ready to help 24/7.
+          </motion.p>
+        </div>
+      </section>
+
+      <section className="py-20 px-4 md:px-8 relative z-10">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+
+            {/* Contact Info */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h2 className="text-3xl font-heading font-bold text-white mb-8">Get in Touch</h2>
+              <p className="text-gray-400 mb-12 text-lg">
+                Whether you need help with your order, have technical questions, or just want to explore partnership opportunities, we're here for you.
+              </p>
+
+              <div className="space-y-8">
+                {[
+                  { icon: Phone, title: "Phone Support", info: "+91 62892 18265", sub: "Mon-Fri 9am-6pm EST" },
+                  { icon: Mail, title: "Email Us", info: "support@shopmybarcode.com", sub: "24/7 Online Support" },
+                  { icon: MapPin, title: "Headquarters", info: "Kolkata, West Bengal, India", sub: "(Opp. Lazzat Resturant)" }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-6 group">
+                    <div className="w-14 h-14 glass-premium rounded-2xl flex items-center justify-center text-orange-500 border border-white/5 group-hover:border-orange-500/50 transition-colors">
+                      <item.icon size={26} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white text-xl mb-1">{item.title}</h3>
+                      <p className="text-orange-400 font-medium">{item.info}</p>
+                      <p className="text-sm text-gray-500 mt-1">{item.sub}</p>
                     </div>
                   </div>
-                  <h3 className="font-heading font-bold text-lg mb-2">{info.title}</h3>
-                  <p className="font-bold text-foreground mb-1">{info.details}</p>
-                  <p className="text-sm text-muted-foreground">{info.subtext}</p>
-                </motion.div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </motion.div>
 
-            {/* Contact Form */}
-            <div className="max-w-2xl mx-auto">
-              <motion.form
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                onSubmit={handleSubmit}
-                className="space-y-6 p-8 md:p-12 bg-muted/30 rounded-2xl border border-border"
-              >
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-bold mb-2">Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Your name"
-                      required
-                      className="w-full px-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors"
-                    />
+            {/* Form */}
+            <div className="glass-premium p-8 md:p-10 rounded-3xl border border-white/10 glow-border relative z-20">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                <MessageSquare className="text-orange-500" /> Send a Message
+              </h3>
+              <form className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-400">First Name</label>
+                    <Input placeholder="John" className="bg-white/5 border-white/10 text-white h-12" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-2">Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="your@email.com"
-                      required
-                      className="w-full px-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors"
-                    />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-400">Last Name</label>
+                    <Input placeholder="Doe" className="bg-white/5 border-white/10 text-white h-12" />
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-bold mb-2">Phone</label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+91 XXXXX XXXXX"
-                      className="w-full px-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-2">Subject</label>
-                    <select
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors bg-white"
-                    >
-                      <option value="">Select subject</option>
-                      <option value="general">General Inquiry</option>
-                      <option value="barcode">Barcode Request</option>
-                      <option value="support">Technical Support</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-400">Email Address</label>
+                  <Input type="email" placeholder="john@company.com" className="bg-white/5 border-white/10 text-white h-12" />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-bold mb-2">Message</label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Tell us how we can help..."
-                    required
-                    rows={5}
-                    className="w-full px-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors resize-none"
-                  ></textarea>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-400">Message</label>
+                  <Textarea placeholder="How can we help you today?" className="bg-white/5 border-white/10 text-white min-h-[150px] resize-none p-4" />
                 </div>
 
-                {submitted && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-4 bg-secondary/10 border border-secondary rounded-lg text-secondary font-bold text-center"
-                  >
-                    ✓ Thank you! We'll be in touch soon.
-                  </motion.div>
-                )}
-
-                <button
-                  type="submit"
-                  className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-lg hover:bg-primary/90 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
-                >
-                  <Send className="h-5 w-5" />
+                <Button className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white h-14 text-lg font-bold rounded-xl shadow-lg shadow-orange-900/20">
                   Send Message
-                </button>
-              </motion.form>
+                </Button>
+              </form>
             </div>
-          </div>
-        </section>
 
-        {/* FAQ Preview */}
-        <section className="py-20 bg-muted/30">
-          <div className="container mx-auto px-4 md:px-6">
-            <h2 className="font-heading font-bold text-3xl text-center mb-12">Frequently Asked Questions</h2>
-            <div className="max-w-2xl mx-auto space-y-4">
-              {[
-                {
-                  q: "How long does it take to get my barcode?",
-                  a: "We deliver barcodes instantly via email after approval. You'll get high-resolution images ready to print."
-                },
-                {
-                  q: "Are your barcodes globally accepted?",
-                  a: "Yes! Our barcodes are verified and accepted by retailers across India and internationally."
-                },
-                {
-                  q: "What if I need to update product information?",
-                  a: "You can easily edit product details anytime using your exclusive online dashboard."
-                }
-              ].map((faq, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="p-6 bg-white rounded-lg border border-border"
-                >
-                  <h3 className="font-heading font-bold mb-3 text-foreground">{faq.q}</h3>
-                  <p className="text-muted-foreground">{faq.a}</p>
-                </motion.div>
-              ))}
-            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
       <Footer />
     </div>
   );

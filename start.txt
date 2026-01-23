@@ -1,0 +1,11 @@
+1-------------
+to start the app in development:
+npm run dev
+
+
+2-------------
+to build the app:
+npm run build
+
+to start the app in production:
+npm start

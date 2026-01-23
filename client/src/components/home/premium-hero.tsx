@@ -61,7 +61,7 @@ export function PremiumHero() {
               >
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-orange-400" />
-                  <span className="text-sm font-bold text-orange-300">Official Retail Barcodes</span>
+                  <span className="text-sm font-bold text-orange-300">Official Barcodes</span>
                 </div>
               </motion.div>
 

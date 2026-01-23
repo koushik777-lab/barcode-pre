@@ -31,19 +31,20 @@ export function Navbar() {
       <nav
         className={cn(
           "transition-all duration-300 z-50",
-          scrolled
-            ? "fixed top-2 left-4 right-4 glass-premium py-3 rounded-full"
-            : "fixed top-0 left-0 right-0 bg-transparent border-transparent py-5 border-b"
+          scrolled || isOpen
+            ? "fixed top-2 left-4 right-4 glass-premium py-3"
+            : "fixed top-0 left-0 right-0 bg-transparent border-transparent py-5 border-b",
+          scrolled && !isOpen ? "rounded-full" : "rounded-2xl"
         )}
       >
         <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative h-10 w-10 overflow-hidden rounded-lg group-hover:opacity-90 transition-opacity">
+            <div className="relative h-16 w-auto group-hover:opacity-90 transition-opacity">
               {/* Logo updated to use barco.jpg as requested previously */}
               <img
-                src="/barco.jpg"
+                src="/new_logo.jpeg"
                 alt="ShopMyBarcode Logo"
-                className="h-full w-full object-cover"
+                className="h-full w-auto object-contain rounded-lg"
               />
             </div>
             <div className="flex flex-col leading-none">
@@ -91,7 +92,7 @@ export function Navbar() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white border-b border-border overflow-hidden"
+              className="md:hidden bg-background/50 backdrop-blur-sm border-t border-border/50 overflow-hidden"
             >
               <div className="container px-4 py-6 flex flex-col gap-4">
                 {navLinks.map((link) => (

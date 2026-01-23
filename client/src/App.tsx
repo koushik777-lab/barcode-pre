@@ -7,6 +7,8 @@ import Home from "@/pages/home";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import VerifyPage from "@/pages/verify";
+import Terms from "@/pages/terms";
+import Privacy from "@/pages/privacy";
 import AdminAuth from "@/pages/admin/auth";
 import AdminDashboard from "@/pages/admin/dashboard";
 import ProductTable from "@/pages/admin/product-table";
@@ -20,6 +22,8 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/verify" component={VerifyPage} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/privacy" component={Privacy} />
       <Route path="/admin" component={AdminAuth} />
       <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
       <ProtectedRoute path="/admin/products" component={ProductTable} />

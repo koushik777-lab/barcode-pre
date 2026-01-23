@@ -2,9 +2,13 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Phone, MessageCircle, X } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+import { useLocation } from "wouter";
 
 export default function ContactFloatingButton() {
+    const [location] = useLocation();
     const [isOpen, setIsOpen] = useState(false);
+
+    if (location.startsWith("/admin")) return null;
 
     const toggleOpen = () => setIsOpen(!isOpen);
 

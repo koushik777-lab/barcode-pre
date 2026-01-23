@@ -251,83 +251,75 @@ export default function VerifyPage() {
                 )}
               </div>
 
-              <div className="divide-y divide-gray-100">
-                {/* Product Image */}
-                <div className="grid grid-cols-1 md:grid-cols-12">
-                  <div className="md:col-span-4 bg-gray-50/50 p-4 border-r border-gray-100 font-semibold text-gray-700 text-sm uppercase tracking-wide flex items-center">
-                    Product Image
-                  </div>
-                  <div className="md:col-span-8 p-4 flex justify-start items-center min-h-[150px]">
-                    {barcode.imageUrl ? (
-                      <img
-                        src={barcode.imageUrl}
-                        alt="Product"
-                        className="h-48 w-48 object-contain border border-gray-100 rounded-sm"
-                      />
-                    ) : (
-                      <span className="text-gray-400 italic">No image available</span>
-                    )}
-                  </div>
-                </div>
+              {/* Dynamic Fields Flattening */}
+              {(() => {
+                const allRows: Array<{ label: string; value: React.ReactNode; key: string }> = [];
 
-                {/* Barcode Image */}
-                <div className="grid grid-cols-1 md:grid-cols-12">
-                  <div className="md:col-span-4 bg-gray-50/50 p-4 border-r border-gray-100 font-semibold text-gray-700 text-sm uppercase tracking-wide flex items-center">
-                    Bar Code
-                  </div>
-                  <div className="md:col-span-8 p-4 flex justify-start items-center min-h-[100px]">
-                    {barcode.barcodeImageUrl ? (
-                      <img
-                        src={barcode.barcodeImageUrl}
-                        alt="Barcode"
-                        className="h-24 w-auto object-contain"
-                      />
-                    ) : (
-                      <span className="text-gray-400 italic">No barcode image available</span>
-                    )}
-                  </div>
-                </div>
+                // 1. Product Image
+                allRows.push({
+                  label: "Product Image",
+                  key: "product-image",
+                  value: barcode.imageUrl ? (
+                    <img
+                      src={barcode.imageUrl}
+                      alt="Product"
+                      className="h-48 w-48 object-contain border border-gray-100 rounded-sm"
+                    />
+                  ) : (
+                    <span className="text-gray-400 italic">No image available</span>
+                  ),
+                });
 
-                {/* Dynamic Fields */}
-                {fieldGroups.map((group, groupIndex) => {
-                  // Filter fields that have a value
-                  const validFields = group.fields.filter(field => {
+                // 2. Barcode Image
+                allRows.push({
+                  label: "Bar Code",
+                  key: "barcode-image",
+                  value: barcode.barcodeImageUrl ? (
+                    <img
+                      src={barcode.barcodeImageUrl}
+                      alt="Barcode"
+                      className="h-24 w-auto object-contain"
+                    />
+                  ) : (
+                    <span className="text-gray-400 italic">No barcode image available</span>
+                  ),
+                });
+
+                // 3. Dynamic Fields
+                fieldGroups.forEach((group) => {
+                  group.fields.forEach((field) => {
                     const val = barcode[field.key as keyof Barcode];
-                    return val !== undefined && val !== null && val !== "";
+                    if (val !== undefined && val !== null && val !== "") {
+                      allRows.push({
+                        label: field.label,
+                        key: field.key,
+                        value: formatValue(field.key as keyof Barcode, val),
+                      });
+                    }
                   });
+                });
 
-                  // If no fields in this group are valid, skip the whole group
-                  if (validFields.length === 0) return null;
-
-                  return (
-                    <div key={groupIndex} className="border-t-4 border-gray-100 first:border-0">
-                      {/* Optional Group Header - simplified to just show fields for now to match request strictness,
-                          but grouping logic helps organization in code.
-                          We can choose to just flatten or render.
-                          User said: "only this things are visiable other wise no things are visibale"
-                          So showing headers might be clutter if they only have 1 item.
-                          But let's stick to the list format requested.
-                      */}
-
-                      {validFields.map((field, fieldIndex) => (
-                        <div key={`${groupIndex}-${fieldIndex}`} className="grid grid-cols-1 md:grid-cols-12 border-t first:border-t-0 border-gray-100">
-                          <div className="md:col-span-4 bg-gray-50/50 p-4 border-r border-gray-100 font-semibold text-gray-700 text-sm uppercase tracking-wide flex items-center">
-                            {field.label}
-                          </div>
-                          <div className="md:col-span-8 p-4 text-gray-900 text-base font-medium flex items-center min-h-[56px] break-all">
-                            {formatValue(field.key as keyof Barcode, barcode[field.key as keyof Barcode])}
-                          </div>
-                        </div>
-                      ))}
+                return allRows.map((row, index) => (
+                  <div
+                    key={row.key}
+                    className={`grid grid-cols-1 md:grid-cols-12 border-t first:border-t-0 border-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      }`}
+                  >
+                    <div className="md:col-span-4 p-4 border-r border-gray-100 font-semibold text-gray-700 text-sm uppercase tracking-wide flex items-center">
+                      {row.label}
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="md:col-span-8 p-4 text-gray-900 text-base font-medium flex items-center min-h-[56px] break-all">
+                      {row.value}
+                    </div>
+                  </div>
+                ));
+              })()}
             </div>
+
           )}
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }
 

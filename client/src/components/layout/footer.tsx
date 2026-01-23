@@ -1,4 +1,4 @@
-import { Barcode, Facebook, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { Barcode, Facebook, Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
 import { Link } from "wouter";
 
 export function Footer() {
@@ -9,7 +9,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="bg-primary/10 p-2 rounded-lg">
-                <img src="/barco.jpg" alt="ShopMyBarcode Logo" className="h-6 w-6 object-cover rounded-sm" />
+                <img src="/new_logo.jpeg" alt="ShopMyBarcode Logo" className="h-6 w-6 object-cover" />
               </div>
               <span className="font-heading font-bold text-xl text-foreground">
                 Shop My Barcode
@@ -25,6 +25,9 @@ export function Footer() {
               <a href="https://www.instagram.com/shop_my_barcode/" target="blank" className="p-2 bg-white border border-border rounded-full text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Instagram className="h-4 w-4" />
               </a>
+              <a href="https://www.linkedin.com/company/shop-my-barcode/" target="blank" className="p-2 bg-white border border-border rounded-full text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+                <Linkedin className="h-4 w-4" />
+              </a>
             </div>
           </div>
 
@@ -33,8 +36,8 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><Link href="/" className="hover:text-primary transition-colors">Retail Barcodes</Link></li>
               <li><Link href="/" className="hover:text-primary transition-colors">QR Code Generation</Link></li>
-              <li><Link href="/" className="hover:text-primary transition-colors">Product Verification</Link></li>
-              <li><Link href="/" className="hover:text-primary transition-colors">ISBN Codes</Link></li>
+              <li><Link href="/verify" className="hover:text-primary transition-colors">Product Verification</Link></li>
+              {/* <li><Link href="/" className="hover:text-primary transition-colors">ISBN Codes</Link></li> */}
             </ul>
           </div>
 

@@ -49,9 +49,9 @@ export default function Contact() {
 
               <div className="space-y-8">
                 {[
-                  { icon: Phone, title: "Phone Support", info: "+91 62892 18265", sub: "Mon-Fri 9am-6pm EST" },
-                  { icon: Mail, title: "Email Us", info: "support@shopmybarcode.com", sub: "24/7 Online Support" },
-                  { icon: MapPin, title: "Headquarters", info: "Kolkata, West Bengal, India", sub: "(Opp. Lazzat Resturant)" }
+                  { icon: Phone, title: "Phone Support", info: "+91 62892 18265", sub: "" },
+                  { icon: Mail, title: "Email Us", info: "support@shopmybarcode.com", sub: "Online Support" },
+                  { icon: MapPin, title: "Headquarters", info: "Kolkata, West Bengal, India", sub: "(2nd Floor, 23A, Royd Street, Kolkata - 700016,West Bengal, India)" }
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-6 group">
                     <div className="w-14 h-14 glass-premium rounded-2xl flex items-center justify-center text-orange-500 border border-white/5 group-hover:border-orange-500/50 transition-colors">

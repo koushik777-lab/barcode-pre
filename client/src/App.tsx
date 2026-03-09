@@ -13,6 +13,7 @@ import AdminAuth from "@/pages/admin/auth";
 import AdminDashboard from "@/pages/admin/dashboard";
 import ProductTable from "@/pages/admin/product-table";
 import ProductForm from "@/pages/admin/product-form";
+import BarcodeDetailsPage from "@/pages/barcode-details";
 import { ProtectedRoute } from "./lib/protected-route";
 
 function Router() {
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/verify" component={VerifyPage} />
+      <Route path="/barcode/:code" component={BarcodeDetailsPage} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/admin" component={AdminAuth} />

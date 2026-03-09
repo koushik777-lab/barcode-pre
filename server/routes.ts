@@ -134,5 +134,41 @@ export async function registerRoutes(
     }
   });
 
+  // Sitemap
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const barcodes = await storage.getAllBarcodes();
+      const baseUrl = "https://shopmybarcode.in";
+
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+      xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+      // Static pages
+      const staticPages = ['', '/about', '/contact', '/verify', '/terms', '/privacy'];
+      for (const page of staticPages) {
+        xml += `  <url>\n    <loc>${baseUrl}${page}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      }
+
+      // Dynamic barcode pages
+      for (const b of barcodes) {
+        // Only include those matching 'Active'
+        if (b.status === 'Active') {
+          let dateStr = new Date().toISOString();
+          if (b.createdAt) {
+            dateStr = new Date(b.createdAt).toISOString();
+          }
+          xml += `  <url>\n    <loc>${baseUrl}/barcode/${b.barcode}</loc>\n    <lastmod>${dateStr}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
+        }
+      }
+
+      xml += `</urlset>`;
+
+      res.header('Content-Type', 'application/xml');
+      res.send(xml);
+    } catch (err) {
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
   return httpServer;
 }

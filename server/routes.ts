@@ -170,5 +170,11 @@ export async function registerRoutes(
     }
   });
 
+  // Google Site Verification
+  app.get("/google3654bafa8a07822d.html", (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send("google-site-verification: google3654bafa8a07822d.html");
+  });
+
   return httpServer;
 }

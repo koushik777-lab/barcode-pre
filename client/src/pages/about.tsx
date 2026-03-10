@@ -42,10 +42,11 @@ export default function About() {
               <h2 className="text-4xl font-heading font-bold text-white mb-8">Our Mission</h2>
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
-                  At ShopMyBarcode, we exist to dismantle the barriers to retail entry. We believe that every entrepreneur deserves a fair shot at the global market without being bogged down by bureaucratic complexity or exorbitant fees.
+                  Established in 2019, Shop My Barcode is a premier provider of high-quality private barcodes, starting with the distinctive 853 series. We proudly serve businesses across India and around the globe, helping them streamline product identification with ease and efficiency.We are committed to offering genuine, reliable private barcodes tailored to meet diverse business needs. Our expert team ensures that each client receives personalized guidance, helping them choose the right barcode solutions for their specific requirements. Plus, our barcodes are valid for a lifetime with no renewal fees, giving you peace of mind and long-term value.
                 </p>
                 <p>
-                  Since our inception, we have served as the trusted bridge for thousands of artisans, manufacturers, and startups, connecting their innovative products to major marketplaces like Amazon, Walmart, and eBay through GS1-compliant identification.
+                  At Shop My Barcode, we prioritize customer satisfaction through exceptional service, competitive pricing, and prompt support. We believe in building lasting relationships with our clients, empowering their growth with reliable and efficient barcode systems.
+                  Join the growing community of businesses that trust Shop My Barcode for authentic, efficient, and hassle-free barcode solutions that elevate their operations to the next level.
                 </p>
                 <p className="text-white font-semibold">
                   We are not just selling barcodes; we are enabling commerce.

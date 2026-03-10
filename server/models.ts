@@ -90,7 +90,7 @@ const BarcodeSchema: Schema = new Schema({
     websiteLink: { type: String },
     amazonLink: { type: String },
     sku: { type: String },
-    modelNumber: { type: String },
+    modelNumber: { type: String, required: true },
     price: { type: Number },
     currency: { type: String, default: 'INR' },
 

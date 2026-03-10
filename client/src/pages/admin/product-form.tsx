@@ -199,7 +199,7 @@ export default function ProductForm() {
 
     const mutation = useMutation({
         mutationFn: async (data: any) => {
-            const payload = { ...data, price: Number(data.price) };
+            const payload = { ...data, price: data.price ? Number(data.price) : null };
             if (isEdit) {
                 await apiRequest("PUT", `/api/barcodes/${params.id}`, payload);
             } else {
@@ -276,7 +276,7 @@ export default function ProductForm() {
                         </div>
                         <div className="space-y-2">
                             <Label className="text-gray-700">Model Number</Label>
-                            <Input name="modelNumber" value={formData.modelNumber} onChange={handleChange} className={inputClass} />
+                            <Input name="modelNumber" value={formData.modelNumber} onChange={handleChange} required className={inputClass} />
                         </div>
                         <div className="space-y-2">
                             <Label className="text-gray-700">Price</Label>

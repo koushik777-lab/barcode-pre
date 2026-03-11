@@ -58,7 +58,7 @@ export default function About() {
               {[
                 { icon: ShieldCheck, title: "Trusted", desc: "100% Guaranteed Validity" },
                 { icon: Globe, title: "Global", desc: "Accepted Worldwide" },
-                { icon: Building2, title: "Official", desc: "GS1 Compliant Standards" },
+                { icon: Building2, title: "Official", desc: "Official Barcode Provider" },
                 { icon: Users, title: "Support", desc: "24/7 Expert Assistance" }
               ].map((item, i) => (
                 <motion.div

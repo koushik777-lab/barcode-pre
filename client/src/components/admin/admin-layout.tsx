@@ -7,7 +7,11 @@ import {
     Search,
     LayoutDashboard,
     Menu,
-    X
+    X,
+    Table,
+    PlusSquare,
+    PanelLeftClose,
+    PanelLeftOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +24,7 @@ interface AdminLayoutProps {
 export function AdminLayout({ children, breadcrumbs = ["Home"] }: AdminLayoutProps) {
     const [location, setLocation] = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const handleLogout = () => {
         sessionStorage.removeItem("isAdmin");
@@ -40,46 +45,63 @@ export function AdminLayout({ children, breadcrumbs = ["Home"] }: AdminLayoutPro
 
             {/* LEFT SIDEBAR (Fixed) */}
             <aside className={`
-        fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 shadow-sm transition-transform duration-200 ease-in-out
+        fixed md:static inset-y-0 left-0 z-50 ${isCollapsed ? "w-20" : "w-64"} bg-white border-r border-gray-200 shadow-sm transition-all duration-300 ease-in-out flex flex-col
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
       `}>
-                <div className="h-16 flex items-center px-6 border-b border-gray-100">
-                    <div className="flex items-center gap-2 font-bold text-xl text-gray-800">
-                        <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white">
-                            B
+                <div className={`h-16 flex items-center border-b border-gray-100 transition-all w-full ${isCollapsed ? "justify-center" : "px-4 justify-between"}`}>
+                    {!isCollapsed && (
+                        <div className="flex items-center gap-2 pointer-events-none">
+                            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold shrink-0">
+                                B
+                            </div>
+                            <span className="font-bold text-xl text-gray-800 whitespace-nowrap overflow-hidden">Admin</span>
                         </div>
-                        <span>Admin</span>
-                    </div>
+                    )}
+                    <button
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        className={`focus:outline-none transition-colors flex shrink-0 ${isCollapsed
+                            ? "p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
+                            : "p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                            }`}
+                        title={isCollapsed ? "Expand Sidebar" : "Shrink Sidebar"}
+                    >
+                        {isCollapsed ? (
+                            <PanelLeftOpen size={24} strokeWidth={2.5} />
+                        ) : (
+                            <PanelLeftClose size={24} strokeWidth={2.5} />
+                        )}
+                    </button>
                 </div>
 
-                <nav className="p-4 space-y-1">
+                <nav className="p-4 space-y-1 flex-1 overflow-y-auto">
                     <Link href="/admin/dashboard">
-                        <a className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/dashboard") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
-                            <LayoutDashboard size={18} />
-                            Dashboard
+                        <a title="Dashboard" className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/dashboard") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
+                            <LayoutDashboard size={18} className="shrink-0" />
+                            {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Dashboard</span>}
                         </a>
                     </Link>
                     <Link href="/admin/products">
-                        <a className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/products") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
-                            <Package size={18} />
-                            See Product Table
+                        <a title="See Product Table" className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/products") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
+                            <Table size={18} className="shrink-0" />
+                            {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">See Product Table</span>}
                         </a>
                     </Link>
                     <Link href="/admin/products/new">
-                        <a className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/products/new") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
-                            <Package size={18} />
-                            Add Product
+                        <a title="Add Product" className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/products/new") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
+                            <PlusSquare size={18} className="shrink-0" />
+                            {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Add Product</span>}
                         </a>
                     </Link>
                 </nav>
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
+                <div className="p-4 border-t border-gray-100 mt-auto">
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 w-full rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                        title="Logout"
+                        className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3 w-full rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors`}
                     >
-                        <LogOut size={18} />
-                        Logout
+                        <LogOut size={18} className="shrink-0" />
+                        {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Logout</span>}
                     </button>
                 </div>
             </aside>

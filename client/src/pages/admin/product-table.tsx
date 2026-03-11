@@ -147,15 +147,36 @@ export default function ProductTable() {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="p-4 border-t border-gray-200 flex justify-center gap-2">
+                        <div className="p-4 border-t border-gray-200 flex justify-center flex-wrap gap-2">
                             <Button
                                 variant="outline"
                                 disabled={page === 1}
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                             >
-                                Previous
+                                Prev
                             </Button>
-                            <span className="flex items-center px-4 text-sm text-gray-600">Page {page} of {totalPages}</span>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
+                                if (
+                                    p === 1 ||
+                                    p === totalPages ||
+                                    (p >= page - 2 && p <= page + 2)
+                                ) {
+                                    return (
+                                        <Button
+                                            key={p}
+                                            variant={page === p ? "default" : "outline"}
+                                            className={`w-10 h-10 p-0 ${page === p ? "bg-blue-600 hover:bg-blue-700 text-white" : "text-gray-600"}`}
+                                            onClick={() => setPage(p)}
+                                        >
+                                            {p}
+                                        </Button>
+                                    );
+                                }
+                                if (p === page - 3 || p === page + 3) {
+                                    return <span key={p} className="flex items-center justify-center w-8 h-10 text-gray-500">...</span>;
+                                }
+                                return null;
+                            })}
                             <Button
                                 variant="outline"
                                 disabled={page === totalPages}

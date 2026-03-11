@@ -66,13 +66,61 @@ export default function BarcodeDetailsPage() {
     const relatedBarcodes = allBarcodes?.filter(b => b.barcode !== barcode.barcode && b.category === barcode.category).slice(0, 3) || [];
 
     const mainFields = [
+        // Overview
         { label: "Product Name", value: barcode.productName },
         { label: "Brand", value: barcode.brandName },
         { label: "Product Code", value: barcode.barcode },
         { label: "Country", value: barcode.country },
         { label: "Language", value: barcode.language },
         { label: "Category", value: barcode.category },
+        { label: "Description", value: barcode.description },
+        { label: "Website Link", value: barcode.websiteLink ? <a href={barcode.websiteLink.startsWith('http') ? barcode.websiteLink : `https://${barcode.websiteLink}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">{barcode.websiteLink}</a> : undefined },
+        { label: "Amazon Link", value: barcode.amazonLink ? <a href={barcode.amazonLink.startsWith('http') ? barcode.amazonLink : `https://${barcode.amazonLink}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">{barcode.amazonLink}</a> : undefined },
+        { label: "SKU", value: barcode.sku },
         { label: "Model Number", value: barcode.modelNumber || "HL05" },
+        { label: "Price", value: barcode.price ? `₹${barcode.price}` : undefined },
+
+        // Clothes
+        { label: "Color", value: barcode.color },
+        { label: "Material", value: barcode.material },
+        { label: "Size", value: barcode.size },
+
+        // Size/Weight
+        { label: "Width", value: barcode.width },
+        { label: "Height", value: barcode.height },
+        { label: "Length", value: barcode.length },
+        { label: "Weight", value: barcode.weight },
+        { label: "Fluid", value: barcode.fluid },
+        { label: "Pieces", value: barcode.pieces },
+
+        // Nutrition
+        { label: "Serving Size", value: barcode.servingSize },
+        { label: "Servings Per Container", value: barcode.servingsPer },
+        { label: "Calories", value: barcode.calories },
+        { label: "Fat Calories", value: barcode.fatCalories },
+        { label: "Total Fat", value: barcode.totalFat },
+        { label: "Saturated Fat", value: barcode.saturatedFat },
+        { label: "Trans Fat", value: barcode.transFat },
+        { label: "Cholesterol", value: barcode.cholesterol },
+        { label: "Sodium", value: barcode.sodium },
+        { label: "Potassium", value: barcode.potassium },
+        { label: "Total Carbohydrate", value: barcode.totalCarbohydrate },
+        { label: "Dietary Fiber", value: barcode.dietaryFiber },
+        { label: "Sugar", value: barcode.sugar },
+        { label: "Protein", value: barcode.protein },
+        { label: "Ingredients", value: barcode.ingredients },
+
+        // Publication
+        { label: "Author", value: barcode.author },
+        { label: "Page Count", value: barcode.pageCount },
+        { label: "Binding", value: barcode.binding },
+        { label: "Release Year", value: barcode.releaseYear },
+        { label: "Published", value: barcode.published },
+        { label: "Format", value: barcode.format },
+        { label: "Run Time", value: barcode.runTime },
+
+        // Meta
+        { label: "Issue Date", value: barcode.issueDate ? format(new Date(barcode.issueDate), "MMMM d, yyyy") : undefined },
         { label: "Status", value: barcode.status === "Active" ? "Active" : "Inactive" }
     ].filter(f => f.value);
 

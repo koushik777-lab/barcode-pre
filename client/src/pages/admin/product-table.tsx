@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Edit, Trash2, Plus, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Barcode {
@@ -51,6 +51,12 @@ export default function ProductTable() {
             toast({ title: "Deleted", description: "Product deleted successfully" });
         }
     });
+
+    const copyGoogleLink = (barcode: string) => {
+        const url = `https://www.google.com/search?q=${encodeURIComponent(barcode)}`;
+        navigator.clipboard.writeText(url);
+        toast({ title: "Copied!", description: "Google Search URL copied to clipboard." });
+    };
 
     // Filter
     const filtered = barcodes.filter(b =>
@@ -96,7 +102,7 @@ export default function ProductTable() {
                                 <TableHead className="text-gray-700">Price</TableHead>
                                 <TableHead className="text-gray-700">Status</TableHead>
                                 <TableHead className="text-gray-700">Image</TableHead>
-                                <TableHead className="text-right text-gray-700">Action</TableHead>
+                                <TableHead className="text-right text-gray-700 w-48">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -128,6 +134,15 @@ export default function ProductTable() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
+
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="h-8 text-blue-600 border-blue-200 hover:bg-blue-50 flex gap-1 items-center"
+                                                    onClick={() => copyGoogleLink(item.barcode)}
+                                                >
+                                                    <Copy size={14} /> Link
+                                                </Button>
 
                                                 <Link href={`/admin/products/${item._id}`}>
                                                     <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600 hover:bg-green-50">

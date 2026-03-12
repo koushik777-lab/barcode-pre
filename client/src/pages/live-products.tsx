@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AnimatedSection } from "@/components/ui/animated-section";
@@ -21,7 +21,7 @@ export default function LiveProducts() {
         queryKey: ["/api/barcodes"],
     });
 
-    const liveProducts = barcodes?.filter(b => b.isIndexed) || [];
+    const liveProducts = barcodes?.filter(b => b.isIndexed && b.imageUrl && b.imageUrl.trim() !== '') || [];
 
     return (
         <div className="min-h-screen bg-background text-foreground relative flex flex-col">
@@ -66,51 +66,68 @@ export default function LiveProducts() {
                                     delay={i * 0.05}
                                     className="break-inside-avoid"
                                 >
-                                    <div className="glass-premium rounded-2xl border border-orange-500/20 hover:border-orange-500/50 transition-all duration-300 overflow-hidden group hover:shadow-[0_0_30px_rgba(250,146,82,0.15)] flex flex-col">
+                                    <div
+                                        className="relative rounded-2xl p-[2px] overflow-hidden group hover:shadow-[0_0_30px_rgba(250,146,82,0.3)] transition-all duration-300 cursor-pointer"
+                                        onClick={() => window.open(`https://www.google.com/search?q=${product.barcode}`, '_blank')}
+                                    >
+                                        <div className="animated-border-bg" />
 
-                                        {/* Header: Barcode Number */}
-                                        <div className="p-4 border-b border-white/5 bg-white/5 backdrop-blur-md">
-                                            <h3 className="text-lg font-heading font-bold text-orange-400 truncate text-glow-strong">
-                                                {product.barcode}
-                                            </h3>
-                                        </div>
+                                        <div className="relative z-10 bg-[#121a28] rounded-[14px] flex flex-col h-full overflow-hidden border border-orange-500/10 hover:border-transparent transition-colors">
 
-                                        <div className="p-5 flex flex-col gap-5">
-                                            {/* Product Front Image */}
-                                            {product.imageUrl && (
-                                                <div className="relative w-full rounded-xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center min-h-[160px] group-hover:border-orange-500/30 transition-colors">
-                                                    <img
-                                                        src={product.imageUrl}
-                                                        alt={`Front of ${product.productName}`}
-                                                        className="w-full h-auto object-contain max-h-[250px] mix-blend-screen opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                                                        loading="lazy"
-                                                    />
-                                                </div>
-                                            )}
-
-                                            {/* Barcode Image */}
-                                            {product.barcodeImageUrl && (
-                                                <div className="relative w-full bg-white/10 backdrop-blur-sm flex items-center justify-center p-3 border border-white/10 rounded-xl group-hover:bg-white/15 transition-colors">
-                                                    <img
-                                                        src={product.barcodeImageUrl}
-                                                        alt={`Barcode ${product.barcode}`}
-                                                        className="h-14 w-auto object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
-                                                        loading="lazy"
-                                                    />
-                                                </div>
-                                            )}
-
-                                            {/* Text Details */}
-                                            <div className="space-y-2 mt-1">
-                                                <h4 className="font-heading font-bold text-white text-lg line-clamp-2 leading-snug group-hover:text-orange-100 transition-colors">
-                                                    {product.productName}
-                                                </h4>
-                                                <div className="inline-block px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-sm font-medium">
-                                                    {product.brandName}
+                                            {/* Hover Overlay */}
+                                            <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-50 backdrop-blur-sm pointer-events-none">
+                                                <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex flex-col items-center">
+                                                    <div className="w-16 h-16 rounded-full bg-orange-500/20 flex items-center justify-center mb-3 border border-orange-500/50">
+                                                        <Search className="w-8 h-8 text-orange-400" />
+                                                    </div>
+                                                    <span className="text-white font-bold text-lg text-glow">View on Google</span>
                                                 </div>
                                             </div>
-                                        </div>
 
+                                            {/* Header: Barcode Number */}
+                                            <div className="p-4 border-b border-white/5 bg-white/5 backdrop-blur-md">
+                                                <h3 className="text-lg font-heading font-bold text-orange-400 truncate text-glow-strong">
+                                                    {product.barcode}
+                                                </h3>
+                                            </div>
+
+                                            <div className="p-5 flex flex-col gap-5">
+                                                {/* Product Front Image */}
+                                                {product.imageUrl && (
+                                                    <div className="relative w-full rounded-xl overflow-hidden bg-white/5 flex items-center justify-center min-h-[160px]">
+                                                        <img
+                                                            src={product.imageUrl}
+                                                            alt={`Front of ${product.productName}`}
+                                                            className="w-full h-auto object-contain max-h-[250px] mix-blend-screen opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                                                            loading="lazy"
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {/* Barcode Image */}
+                                                {product.barcodeImageUrl && (
+                                                    <div className="relative w-full bg-white/10 backdrop-blur-sm flex items-center justify-center p-3 rounded-xl">
+                                                        <img
+                                                            src={product.barcodeImageUrl}
+                                                            alt={`Barcode ${product.barcode}`}
+                                                            className="h-14 w-auto object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
+                                                            loading="lazy"
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {/* Text Details */}
+                                                <div className="space-y-2 mt-1">
+                                                    <h4 className="font-heading font-bold text-white text-lg line-clamp-2 leading-snug group-hover:text-orange-100 transition-colors">
+                                                        {product.productName}
+                                                    </h4>
+                                                    <div className="inline-block px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-sm font-medium">
+                                                        {product.brandName}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </AnimatedSection>
                             ))}

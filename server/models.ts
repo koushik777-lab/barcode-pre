@@ -75,6 +75,7 @@ export interface IBarcode extends Document {
     issueDate?: Date;
     status: 'Active' | 'Inactive';
     manufacturer?: string;
+    isIndexed?: boolean;
     createdAt: Date;
 }
 
@@ -138,6 +139,7 @@ const BarcodeSchema: Schema = new Schema({
     barcodeImageUrl: { type: String },
     issueDate: { type: Date },
     manufacturer: { type: String },
+    isIndexed: { type: Boolean, default: false },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
     createdAt: { type: Date, default: Date.now },
 });

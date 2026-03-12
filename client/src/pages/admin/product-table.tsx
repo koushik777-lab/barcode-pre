@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { AdminLayout } from "@/components/admin/admin-layout";
@@ -11,9 +13,16 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Trash2, Plus, Copy } from "lucide-react";
+import { Edit, Trash2, Plus, Copy, FileSpreadsheet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Barcode {
@@ -27,6 +36,7 @@ interface Barcode {
     status: string;
     imageUrl?: string;
     modelNumber?: string;
+    isIndexed?: boolean;
 }
 
 export default function ProductTable() {
@@ -52,10 +62,29 @@ export default function ProductTable() {
         }
     });
 
-    const copyGoogleLink = (barcode: string) => {
+    const toggleIndexMutation = useMutation({
+        mutationFn: async ({ id, isIndexed }: { id: string; isIndexed: boolean }) => {
+            await apiRequest("PUT", `/api/barcodes/${id}`, { isIndexed });
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["/api/barcodes"] });
+            toast({
+                title: variables.isIndexed ? "Indexed" : "Unindexed",
+                description: variables.isIndexed ? "Product marked as indexed on Google" : "Product marked as not indexed"
+            });
+        }
+    });
+
+    const copyGoogleSearchLink = (barcode: string) => {
         const url = `https://www.google.com/search?q=${encodeURIComponent(barcode)}`;
         navigator.clipboard.writeText(url);
         toast({ title: "Copied!", description: "Google Search URL copied to clipboard." });
+    };
+
+    const copyGoogleLink = (barcode: string) => {
+        const url = `https://shopmybarcode.in/barcode/${barcode}`;
+        navigator.clipboard.writeText(url);
+        toast({ title: "Copied!", description: "Product URL copied to clipboard." });
     };
 
     // Filter
@@ -68,16 +97,92 @@ export default function ProductTable() {
     const totalPages = Math.ceil(filtered.length / itemsPerPage);
     const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
+    const exportToExcel = async (data: Barcode[], filename: string) => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Products");
+
+        // Define columns
+        worksheet.columns = [
+            { header: "S.No", key: "sno", width: 10 },
+            { header: "Product Name", key: "productName", width: 30 },
+            { header: "Product Code", key: "productCode", width: 25 },
+            { header: "Brand", key: "brand", width: 20 },
+            { header: "Country", key: "country", width: 15 },
+            { header: "Category", key: "category", width: 25 },
+            { header: "Price", key: "price", width: 15 },
+            { header: "Status", key: "status", width: 15 },
+            { header: "Live Status", key: "liveStatus", width: 20 }
+        ];
+
+        // Make headers bold
+        worksheet.getRow(1).font = { bold: true };
+
+        // Add Data and Style
+        data.forEach((item, index) => {
+            const row = worksheet.addRow({
+                sno: index + 1,
+                productName: item.productName || '',
+                productCode: item.barcode || '',
+                brand: item.brandName || '',
+                country: item.country || '',
+                category: item.category || '',
+                price: item.price || 0,
+                status: item.status || 'Inactive',
+                liveStatus: item.isIndexed ? 'LIVE' : 'NOT LIVE'
+            });
+
+            // Style Live Status Column
+            const liveStatusCell = row.getCell('liveStatus');
+            liveStatusCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            if (item.isIndexed) {
+                liveStatusCell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FF22C55E' } // Tailwind Green-500
+                };
+                liveStatusCell.font = { color: { argb: 'FFFFFFFF' }, bold: true };
+            } else {
+                liveStatusCell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFEF4444' } // Tailwind Red-500
+                };
+                liveStatusCell.font = { color: { argb: 'FFFFFFFF' }, bold: true };
+            }
+        });
+
+        // Generate Excel File and trigger download
+        const buffer = await workbook.xlsx.writeBuffer();
+        saveAs(new Blob([buffer]), filename);
+    };
+
     return (
         <AdminLayout breadcrumbs={["Home", "Product Details Table"]}>
             <div className="space-y-4">
                 <div className="flex justify-between items-center bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                     <h1 className="text-xl font-bold text-gray-800">Product Details Table</h1>
-                    <Link href="/admin/products/new">
-                        <Button className="bg-blue-600 hover:bg-blue-700 gap-2">
-                            <Plus size={16} /> Add New
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            className="text-gray-700 gap-2 font-medium border-gray-300"
+                            onClick={() => exportToExcel(barcodes, "all-products.xlsx")}
+                        >
+                            <FileSpreadsheet size={16} className="text-emerald-600" /> Export All
                         </Button>
-                    </Link>
+                        <Button
+                            variant="outline"
+                            className="text-gray-700 gap-2 font-medium border-gray-300"
+                            onClick={() => exportToExcel(barcodes.filter(b => b.isIndexed), "live-products.xlsx")}
+                        >
+                            <FileSpreadsheet size={16} className="text-emerald-600" /> Export Live
+                        </Button>
+                        <Link href="/admin/products/new">
+                            <Button className="bg-blue-600 hover:bg-blue-700 gap-2">
+                                <Plus size={16} /> Add New
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
@@ -97,6 +202,8 @@ export default function ProductTable() {
                                 <TableHead className="text-gray-700">Product Name</TableHead>
                                 <TableHead className="text-gray-700">Product Code</TableHead>
                                 <TableHead className="text-gray-700">Brand</TableHead>
+                                <TableHead className="text-gray-700">Live Status</TableHead>
+                                <TableHead className="text-gray-700">GPAGE</TableHead>
                                 <TableHead className="text-gray-700">Country</TableHead>
                                 <TableHead className="text-gray-700">Category</TableHead>
                                 <TableHead className="text-gray-700">Price</TableHead>
@@ -112,11 +219,44 @@ export default function ProductTable() {
                                 </TableRow>
                             ) : (
                                 paginated.map((item, index) => (
-                                    <TableRow key={item._id} className="hover:bg-gray-50">
+                                    <TableRow
+                                        key={item._id}
+                                        className="hover:bg-gray-50 transition-colors"
+                                    >
                                         <TableCell className="text-gray-700">{(page - 1) * itemsPerPage + index + 1}</TableCell>
                                         <TableCell className="font-medium text-gray-900">{item.productName}</TableCell>
                                         <TableCell className="font-mono text-xs text-gray-600">{item.barcode}</TableCell>
                                         <TableCell className="text-gray-700">{item.brandName}</TableCell>
+                                        <TableCell>
+                                            <Select
+                                                value={item.isIndexed ? "LIVE" : "NOT LIVE"}
+                                                onValueChange={(value) => {
+                                                    toggleIndexMutation.mutate({ id: item._id, isIndexed: value === "LIVE" });
+                                                }}
+                                            >
+                                                <SelectTrigger className={`h-8 w-[110px] text-xs font-semibold border-0 ${item.isIndexed ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="LIVE" className="text-green-700 font-medium">LIVE</SelectItem>
+                                                    <SelectItem value="NOT LIVE" className="text-red-700 font-medium">NOT LIVE</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-8 w-8 p-0 text-blue-600 border-blue-200 hover:bg-blue-50"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    copyGoogleLink(item.barcode);
+                                                }}
+                                                title="Copy Product Link"
+                                            >
+                                                <Copy size={14} />
+                                            </Button>
+                                        </TableCell>
                                         <TableCell className="text-gray-700">{item.country || "-"}</TableCell>
                                         <TableCell className="text-gray-700">{item.category}</TableCell>
                                         <TableCell className="text-gray-700">₹{item.price}</TableCell>
@@ -133,17 +273,15 @@ export default function ProductTable() {
                                             )}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-
+                                            <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
                                                     className="h-8 text-blue-600 border-blue-200 hover:bg-blue-50 flex gap-1 items-center"
-                                                    onClick={() => copyGoogleLink(item.barcode)}
+                                                    onClick={() => copyGoogleSearchLink(item.barcode)}
                                                 >
                                                     <Copy size={14} /> Link
                                                 </Button>
-
                                                 <Link href={`/admin/products/${item._id}`}>
                                                     <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600 hover:bg-green-50">
                                                         <Edit size={16} />

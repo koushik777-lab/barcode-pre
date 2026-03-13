@@ -36,7 +36,7 @@ interface Barcode {
     status: string;
     imageUrl?: string;
     modelNumber?: string;
-    isIndexed?: boolean;
+    liveStatus?: 'LIVE' | 'NOT LIVE' | 'REQUESTED';
 }
 
 export default function ProductTable() {
@@ -63,14 +63,14 @@ export default function ProductTable() {
     });
 
     const toggleIndexMutation = useMutation({
-        mutationFn: async ({ id, isIndexed }: { id: string; isIndexed: boolean }) => {
-            await apiRequest("PUT", `/api/barcodes/${id}`, { isIndexed });
+        mutationFn: async ({ id, liveStatus }: { id: string; liveStatus: string }) => {
+            await apiRequest("PUT", `/api/barcodes/${id}`, { liveStatus });
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["/api/barcodes"] });
             toast({
-                title: variables.isIndexed ? "Indexed" : "Unindexed",
-                description: variables.isIndexed ? "Product marked as indexed on Google" : "Product marked as not indexed"
+                title: "Live Status Updated",
+                description: `Product marked as ${variables.liveStatus}`
             });
         }
     });
@@ -128,20 +128,27 @@ export default function ProductTable() {
                 category: item.category || '',
                 price: item.price || 0,
                 status: item.status || 'Inactive',
-                liveStatus: item.isIndexed ? 'LIVE' : 'NOT LIVE'
+                liveStatus: item.liveStatus || 'NOT LIVE'
             });
 
             // Style Live Status Column
             const liveStatusCell = row.getCell('liveStatus');
             liveStatusCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-            if (item.isIndexed) {
+            if (item.liveStatus === 'LIVE') {
                 liveStatusCell.fill = {
                     type: 'pattern',
                     pattern: 'solid',
                     fgColor: { argb: 'FF22C55E' } // Tailwind Green-500
                 };
                 liveStatusCell.font = { color: { argb: 'FFFFFFFF' }, bold: true };
+            } else if (item.liveStatus === 'REQUESTED') {
+                liveStatusCell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFFFE066' } // Yellow
+                };
+                liveStatusCell.font = { color: { argb: 'FF000000' }, bold: true };
             } else {
                 liveStatusCell.fill = {
                     type: 'pattern',
@@ -173,7 +180,7 @@ export default function ProductTable() {
                         <Button
                             variant="outline"
                             className="text-gray-700 gap-2 font-medium border-gray-300"
-                            onClick={() => exportToExcel(barcodes.filter(b => b.isIndexed), "live-products.xlsx")}
+                            onClick={() => exportToExcel(barcodes.filter(b => b.liveStatus === 'LIVE'), "live-products.xlsx")}
                         >
                             <FileSpreadsheet size={16} className="text-emerald-600" /> Export Live
                         </Button>
@@ -229,16 +236,17 @@ export default function ProductTable() {
                                         <TableCell className="text-gray-700">{item.brandName}</TableCell>
                                         <TableCell>
                                             <Select
-                                                value={item.isIndexed ? "LIVE" : "NOT LIVE"}
+                                                value={item.liveStatus || "NOT LIVE"}
                                                 onValueChange={(value) => {
-                                                    toggleIndexMutation.mutate({ id: item._id, isIndexed: value === "LIVE" });
+                                                    toggleIndexMutation.mutate({ id: item._id, liveStatus: value });
                                                 }}
                                             >
-                                                <SelectTrigger className={`h-8 w-[110px] text-xs font-semibold border-0 ${item.isIndexed ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}>
+                                                <SelectTrigger className={`h-8 w-[110px] text-xs font-semibold border-0 ${item.liveStatus === 'LIVE' ? 'bg-green-100 text-green-700 hover:bg-green-200' : item.liveStatus === 'REQUESTED' ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}>
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="LIVE" className="text-green-700 font-medium">LIVE</SelectItem>
+                                                    <SelectItem value="REQUESTED" className="text-yellow-600 font-medium">REQUESTED</SelectItem>
                                                     <SelectItem value="NOT LIVE" className="text-red-700 font-medium">NOT LIVE</SelectItem>
                                                 </SelectContent>
                                             </Select>
@@ -261,7 +269,7 @@ export default function ProductTable() {
                                         <TableCell className="text-gray-700">{item.category}</TableCell>
                                         <TableCell className="text-gray-700">₹{item.price}</TableCell>
                                         <TableCell>
-                                            <span className={`px-2 py-1 rounded text-xs font-semibold ${item.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                            <span className={`px-2 py-1 rounded text-xs font-semibold ${item.status === 'Active' ? 'bg-green-100 text-green-700' : item.status === 'REQUESTED' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>
                                                 {item.status}
                                             </span>
                                         </TableCell>

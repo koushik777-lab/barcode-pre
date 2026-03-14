@@ -2,14 +2,26 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
     username: string;
+    email: string;
     password?: string;
     isAdmin: boolean;
+    isVerified: boolean;
+    verifyToken?: string;
+    phone?: string;
+    bio?: string;
+    createdAt: Date;
 }
 
 const UserSchema: Schema = new Schema({
     username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isAdmin: { type: Boolean, default: false },
+    isVerified: { type: Boolean, default: false },
+    verifyToken: { type: String },
+    phone: { type: String },
+    bio: { type: String },
+    createdAt: { type: Date, default: Date.now },
 });
 
 export const User = mongoose.model<IUser>('User', UserSchema);
@@ -167,3 +179,27 @@ const ApplicationSchema: Schema = new Schema({
 });
 
 export const Application = mongoose.model<IApplication>('Application', ApplicationSchema);
+
+export interface IOrder extends Document {
+    userId: string;
+    packageName: string;
+    quantity: number;
+    totalPrice: number;
+    status: 'Pending' | 'Processing' | 'Completed' | 'Cancelled';
+    razorpayOrderId?: string;
+    razorpayPaymentId?: string;
+    createdAt: Date;
+}
+
+const OrderSchema: Schema = new Schema({
+    userId: { type: String, required: true },
+    packageName: { type: String, required: true },
+    quantity: { type: Number, required: true, default: 1 },
+    totalPrice: { type: Number, required: true },
+    status: { type: String, enum: ['Pending', 'Processing', 'Completed', 'Cancelled'], default: 'Pending' },
+    razorpayOrderId: { type: String },
+    razorpayPaymentId: { type: String },
+    createdAt: { type: Date, default: Date.now },
+});
+
+export const Order = mongoose.model<IOrder>('Order', OrderSchema);

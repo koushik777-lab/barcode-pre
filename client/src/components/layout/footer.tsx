@@ -35,7 +35,7 @@ export function Footer() {
             <h4 className="font-heading font-bold text-foreground mb-6">Services</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><Link href="/" className="hover:text-primary transition-colors">Retail Barcodes</Link></li>
-              <li><Link href="/" className="hover:text-primary transition-colors">QR Code Generation</Link></li>
+              <li><Link href="/shop" className="hover:text-primary transition-colors">Barcode Pricing</Link></li>
               <li><Link href="/verify" className="hover:text-primary transition-colors">Product Verification</Link></li>
               {/* <li><Link href="/" className="hover:text-primary transition-colors">ISBN Codes</Link></li> */}
             </ul>

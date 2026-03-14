@@ -92,3 +92,96 @@ export async function sendApplicationEmail(data: ApplicationData) {
         return false;
     }
 }
+
+export async function sendOtpEmail(email: string, username: string, otp: string) {
+    try {
+        await transporter.sendMail({
+            from: `"ShopMyBarcode" <${process.env.MAIL_USER}>`,
+            to: email,
+            subject: `Your Password Reset OTP – ShopMyBarcode`,
+            html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; background: #0a0f1a; margin: 0; padding: 0; }
+            .container { max-width: 500px; margin: 30px auto; background: #141e2d; border-radius: 12px; overflow: hidden; border: 1px solid rgba(250,146,82,0.3); }
+            .header { background: linear-gradient(135deg, #f97316, #ea580c); padding: 24px; text-align: center; }
+            .header h2 { margin: 0; color: #fff; font-size: 22px; }
+            .content { padding: 32px; color: #e0e0e0; }
+            .otp-box { background: rgba(250,146,82,0.15); border: 2px solid rgba(250,146,82,0.5); border-radius: 8px; text-align: center; padding: 20px; margin: 24px 0; }
+            .otp { font-size: 40px; font-weight: bold; letter-spacing: 12px; color: #fb923c; }
+            .note { font-size: 13px; color: #9ca3af; margin-top: 16px; }
+            .footer { padding: 16px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid rgba(250,146,82,0.1); }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header"><h2>🔐 Password Reset OTP</h2></div>
+            <div class="content">
+              <p>Hi <strong>${username}</strong>,</p>
+              <p>We received a request to reset your password. Use the OTP below:</p>
+              <div class="otp-box">
+                <div class="otp">${otp}</div>
+              </div>
+              <p class="note">⏱ This OTP expires in <strong>10 minutes</strong>. If you did not request this, please ignore this email.</p>
+            </div>
+            <div class="footer">© ${new Date().getFullYear()} ShopMyBarcode. All rights reserved.</div>
+          </div>
+        </body>
+        </html>
+      `,
+        });
+        return true;
+    } catch (error) {
+        console.error("Error sending OTP email:", error);
+        return false;
+    }
+}
+
+export async function sendVerificationEmail(email: string, username: string, token: string) {
+    try {
+        const baseUrl = process.env.APP_URL || 'https://shopmybarcode.in';
+        const verifyLink = `${baseUrl}/verify-email?token=${token}`;
+
+        await transporter.sendMail({
+            from: `"ShopMyBarcode" <${process.env.MAIL_USER}>`,
+            to: email,
+            subject: `Verify your email – ShopMyBarcode`,
+            html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; background: #0a0f1a; margin: 0; padding: 0; }
+            .container { max-width: 500px; margin: 30px auto; background: #141e2d; border-radius: 12px; overflow: hidden; border: 1px solid rgba(250,146,82,0.3); }
+            .header { background: linear-gradient(135deg, #f97316, #ea580c); padding: 24px; text-align: center; }
+            .header h2 { margin: 0; color: #fff; font-size: 22px; }
+            .content { padding: 32px; color: #e0e0e0; }
+            .btn { display: block; width: fit-content; margin: 24px auto; padding: 14px 32px; background: linear-gradient(135deg, #f97316, #ea580c); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; }
+            .note { font-size: 13px; color: #9ca3af; margin-top: 16px; }
+            .footer { padding: 16px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid rgba(250,146,82,0.1); }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header"><h2>✅ Verify Your Email</h2></div>
+            <div class="content">
+              <p>Hi <strong>${username}</strong>,</p>
+              <p>Welcome to ShopMyBarcode! Please click the button below to verify your email address and activate your account.</p>
+              <a href="${verifyLink}" class="btn">Verify Email</a>
+              <p class="note">If the button doesn't work, copy and paste this link:<br/><a href="${verifyLink}" style="color:#fb923c;word-break:break-all;">${verifyLink}</a></p>
+              <p class="note">⏱ This link expires in <strong>24 hours</strong>. If you did not sign up, please ignore this email.</p>
+            </div>
+            <div class="footer">© ${new Date().getFullYear()} ShopMyBarcode. All rights reserved.</div>
+          </div>
+        </body>
+        </html>
+      `,
+        });
+        return true;
+    } catch (error) {
+        console.error("Error sending verification email:", error);
+        return false;
+    }
+}

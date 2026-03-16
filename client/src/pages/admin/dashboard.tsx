@@ -9,6 +9,7 @@ import { Package, Users, Plus, ShieldCheck } from "lucide-react";
 interface Barcode {
     _id: string;
     status: string;
+    isIndexed?: boolean;
 }
 
 interface Application {
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
 
     const activeProducts = barcodes.filter(b => b.status === "Active").length;
     const inactiveProducts = barcodes.length - activeProducts;
+    const liveProducts = barcodes.filter(b => b.isIndexed).length;
 
     return (
         <AdminLayout breadcrumbs={["Home", "Dashboard"]}>
@@ -37,7 +39,7 @@ export default function AdminDashboard() {
                     <p className="text-gray-500">Welcome back. Here is what's happening with your products.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <Card className="border-l-4 border-l-blue-500 shadow-sm">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-sm font-medium text-gray-500 flex items-center gap-2">
@@ -68,6 +70,17 @@ export default function AdminDashboard() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-800">{inactiveProducts}</div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-emerald-500 shadow-sm">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                                <ShieldCheck size={16} /> Live Products
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-3xl font-bold text-emerald-600">{liveProducts}</div>
                         </CardContent>
                     </Card>
                 </div>

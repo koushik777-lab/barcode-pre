@@ -24,7 +24,20 @@ interface AdminLayoutProps {
 export function AdminLayout({ children, breadcrumbs = ["Home"] }: AdminLayoutProps) {
     const [location, setLocation] = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("adminSidebarCollapsed") === "true";
+        }
+        return false;
+    });
+
+    const toggleCollapse = () => {
+        setIsCollapsed((prev) => {
+            const newState = !prev;
+            localStorage.setItem("adminSidebarCollapsed", String(newState));
+            return newState;
+        });
+    };
 
     const handleLogout = () => {
         sessionStorage.removeItem("isAdmin");
@@ -58,7 +71,7 @@ export function AdminLayout({ children, breadcrumbs = ["Home"] }: AdminLayoutPro
                         </div>
                     )}
                     <button
-                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        onClick={toggleCollapse}
                         className={`focus:outline-none transition-colors flex shrink-0 ${isCollapsed
                             ? "p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
                             : "p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md"

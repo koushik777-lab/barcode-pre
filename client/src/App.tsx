@@ -18,9 +18,6 @@ import AdminDashboard from "@/pages/admin/dashboard";
 import ProductTable from "@/pages/admin/product-table";
 import ProductForm from "@/pages/admin/product-form";
 import BarcodeDetailsPage from "@/pages/barcode-details";
-import Dashboard from "@/pages/dashboard";
-import ProfilePage from "@/pages/profile";
-import Checkout from "@/pages/checkout";
 import { ProtectedRoute } from "./lib/protected-route";
 import ContactFloatingButton from "@/components/ContactFloatingButton";
 
@@ -32,7 +29,6 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/verify" component={VerifyPage} />
-      <Route path="/verify-email" component={VerifyEmailPage} />
       <Route path="/barcode/:code" component={BarcodeDetailsPage} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />

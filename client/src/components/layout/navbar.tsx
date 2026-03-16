@@ -85,6 +85,7 @@ export function Navbar() {
     { name: "Shop", href: "/shop" },
     { name: "About Us", href: "/about" },
     { name: "Verify Barcode", href: "/verify" },
+    { name: "LIVE PRODUCTS", href: "/live-products" },
     { name: "Contact Us", href: "/contact" },
   ];
 

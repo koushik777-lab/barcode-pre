@@ -87,6 +87,7 @@ export interface IBarcode extends Document {
     issueDate?: Date;
     status: 'Active' | 'Inactive';
     manufacturer?: string;
+    liveStatus?: 'LIVE' | 'NOT LIVE' | 'REQUESTED';
     createdAt: Date;
 }
 
@@ -150,6 +151,7 @@ const BarcodeSchema: Schema = new Schema({
     barcodeImageUrl: { type: String },
     issueDate: { type: Date },
     manufacturer: { type: String },
+    liveStatus: { type: String, enum: ['LIVE', 'NOT LIVE', 'REQUESTED'], default: 'NOT LIVE' },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
     createdAt: { type: Date, default: Date.now },
 });

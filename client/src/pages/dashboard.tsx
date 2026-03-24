@@ -7,9 +7,10 @@ import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
 import {
   ShoppingCart, Package, Clock, CheckCircle2, XCircle, Loader2,
-  Barcode, ChevronRight, Star, Zap, Shield, Crown, UserCog, ShieldCheck
+  Barcode, ChevronRight, Star, Zap, Shield, Crown, UserCog, ShieldCheck, MessageSquare
 } from "lucide-react";
 import { BARCODE_PACKAGES, SPECIAL_PACKAGE } from "@/lib/constants";
+import { io } from "socket.io-client";
 
 interface Order {
   _id: string;
@@ -17,6 +18,7 @@ interface Order {
   quantity: number;
   totalPrice: number;
   status: "Pending" | "Processing" | "Completed" | "Cancelled";
+  ownerNote?: string;
   createdAt: string;
 }
 
@@ -81,6 +83,21 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchOrders();
+
+    if (user) {
+      const socket = io();
+      socket.emit("join_user_room", user.id);
+      
+      socket.on("owner_note_updated", (updatedOrder: Order) => {
+        setOrders((prev) => 
+          prev.map(o => o._id === updatedOrder._id ? { ...o, ownerNote: updatedOrder.ownerNote } : o)
+        );
+      });
+
+      return () => {
+        socket.disconnect();
+      };
+    }
   }, [user]);
 
   const { addToCart } = useCart();
@@ -226,21 +243,36 @@ export default function Dashboard() {
                       transition={{ delay: i * 0.05 }}
                       className="glass-premium rounded-2xl border border-white/10 hover:border-orange-500/30 transition-all p-5 flex flex-col md:flex-row md:items-center justify-between gap-4"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                          <Barcode className="h-6 w-6 text-orange-400" />
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="h-12 w-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                            <Barcode className="h-6 w-6 text-orange-400" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-white">{order.packageName}</p>
+                            <p className="text-xs text-white/40 mt-0.5">
+                              Qty: {order.quantity} · {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-white">{order.packageName}</p>
-                          <p className="text-xs text-white/40 mt-0.5">
-                            Qty: {order.quantity} · {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                          </p>
+                        <div className="flex items-center gap-4 md:gap-6">
+                          <StatusBadge status={order.status} />
+                          <p className="text-xl font-bold text-orange-400">₹{order.totalPrice.toLocaleString()}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 md:gap-6">
-                        <StatusBadge status={order.status} />
-                        <p className="text-xl font-bold text-orange-400">₹{order.totalPrice.toLocaleString()}</p>
-                      </div>
+                      
+                      {/* Owner Note Display */}
+                      {order.ownerNote && (
+                        <div className="mt-4 pt-4 border-t border-white/5">
+                          <div className="flex items-start gap-3 bg-white/5 rounded-xl p-3 border border-orange-500/10">
+                            <MessageSquare className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-1">Update from Admin</p>
+                              <p className="text-sm text-white/80">{order.ownerNote}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </motion.div>
                   ))}
                 </div>

@@ -9,6 +9,7 @@ export interface IUser extends Document {
     verifyToken?: string;
     phone?: string;
     bio?: string;
+    avatarUrl?: string;
     createdAt: Date;
 }
 
@@ -21,6 +22,7 @@ const UserSchema: Schema = new Schema({
     verifyToken: { type: String },
     phone: { type: String },
     bio: { type: String },
+    avatarUrl: { type: String },
     createdAt: { type: Date, default: Date.now },
 });
 
@@ -190,6 +192,17 @@ export interface IOrder extends Document {
     status: 'Pending' | 'Processing' | 'Completed' | 'Cancelled';
     razorpayOrderId?: string;
     razorpayPaymentId?: string;
+    billingDetails?: {
+        fullName?: string;
+        email?: string;
+        phone?: string;
+        address?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        gstin?: string;
+    };
+    ownerNote?: string;
     createdAt: Date;
 }
 
@@ -201,6 +214,8 @@ const OrderSchema: Schema = new Schema({
     status: { type: String, enum: ['Pending', 'Processing', 'Completed', 'Cancelled'], default: 'Pending' },
     razorpayOrderId: { type: String },
     razorpayPaymentId: { type: String },
+    billingDetails: { type: Object },
+    ownerNote: { type: String },
     createdAt: { type: Date, default: Date.now },
 });
 

@@ -150,9 +150,13 @@ export function Navbar() {
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center gap-2 glass-premium px-3 py-2 rounded-full border border-orange-500/30 hover:border-orange-500/60 transition-all"
                   >
-                    <div className="h-7 w-7 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                      {user.username[0].toUpperCase()}
-                    </div>
+                    {user.avatarUrl ? (
+                      <img src={user.avatarUrl} alt={user.username} className="h-7 w-7 rounded-full object-cover shadow-sm border border-white/20" referrerPolicy="no-referrer" />
+                    ) : (
+                      <div className="h-7 w-7 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                        {user.username[0].toUpperCase()}
+                      </div>
+                    )}
                     <span className="text-sm font-medium text-white max-w-[80px] truncate">{user.username}</span>
                     <ChevronDown className={cn("h-3.5 w-3.5 text-white/50 transition-transform", userMenuOpen && "rotate-180")} />
                   </button>

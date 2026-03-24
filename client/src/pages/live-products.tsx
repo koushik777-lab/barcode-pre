@@ -21,7 +21,7 @@ export default function LiveProducts() {
         queryKey: ["/api/barcodes"],
     });
 
-    const liveProducts = barcodes?.filter(b => b.isIndexed && b.imageUrl && b.imageUrl.trim() !== '') || [];
+    const liveProducts = (barcodes as any[])?.filter(b => b.liveStatus === 'LIVE' && b.imageUrl && b.imageUrl.trim() !== '') || [];
 
     return (
         <div className="min-h-screen bg-background text-foreground relative flex flex-col">

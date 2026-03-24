@@ -6,6 +6,9 @@ import { sendApplicationEmail, sendOtpEmail, sendVerificationEmail } from "./mai
 import { hashPassword, verifyPassword } from "./auth";
 import { randomInt, randomBytes, createHmac } from "crypto";
 import { razorpay } from "./razorpay";
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Server as SocketIOServer } from "socket.io";
 
 // In-memory OTP store: email -> { otp, expires }
 const otpStore = new Map<string, { otp: string; expires: number }>();
@@ -16,7 +19,79 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  const io = new SocketIOServer(httpServer, {
+    cors: { origin: "*" },
+  });
+
+  io.on("connection", (socket) => {
+    socket.on("join_user_room", (userId) => {
+      socket.join(`user_${userId}`);
+    });
+  });
+
+  // --- Auth & Session ---
   await connectDB();
+
+  passport.serializeUser((user: any, done) => {
+    done(null, user._id);
+  });
+
+  passport.deserializeUser(async (id: string, done) => {
+    try {
+      const user = await storage.getUser(id);
+      done(null, user);
+    } catch (err) {
+      done(err, null);
+    }
+  });
+
+  const appUrl = process.env.APP_URL || "http://localhost:5001";
+
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL: `${appUrl}/api/auth/google/callback`,
+        },
+        async (accessToken, refreshToken, profile, done) => {
+          try {
+            const email = profile.emails?.[0]?.value;
+            if (!email) {
+              return done(new Error("No email found from Google account"), false);
+            }
+
+            let user = await storage.getUserByEmail(email);
+            const picture = profile.photos?.[0]?.value || "";
+
+            if (!user) {
+              const username = (profile.displayName || email.split("@")[0])
+                .replace(/\s+/g, "")
+                .toLowerCase() + Math.floor(Math.random() * 1000);
+              const hashedPassword = await hashPassword(randomBytes(16).toString("hex"));
+
+              user = await storage.createUser({
+                username,
+                email,
+                password: hashedPassword,
+                isVerified: true, // Google verified
+                avatarUrl: picture,
+              });
+            } else if (picture && user.avatarUrl !== picture) {
+              // Update existing user with Google picture if they don't have one or it changed
+              await (user as any).updateOne({ avatarUrl: picture });
+              user.avatarUrl = picture;
+            }
+
+            return done(null, user);
+          } catch (error) {
+            return done(error, false);
+          }
+        }
+      )
+    );
+  }
 
   // Admin Login
   app.post("/api/admin/login", async (req, res) => {
@@ -152,7 +227,7 @@ export async function registerRoutes(
       if (!user.isVerified) {
         return res.status(403).json({ success: false, message: "Please verify your email before logging in.", needsVerification: true, email: user.email });
       }
-      const safeUser = { id: user._id, username: user.username, email: user.email, isAdmin: user.isAdmin };
+      const safeUser = { id: user._id, username: user.username, email: user.email, isAdmin: user.isAdmin, avatarUrl: user.avatarUrl };
       res.json({ success: true, message: "Logged in successfully", user: safeUser });
     } catch (error) {
       console.error("Login error:", error);
@@ -230,6 +305,36 @@ export async function registerRoutes(
     }
   });
 
+  // --- Google Auth ---
+
+  app.get(
+    "/api/auth/google",
+    passport.authenticate("google", { scope: ["profile", "email"] })
+  );
+
+  app.get(
+    "/api/auth/google/callback",
+    passport.authenticate("google", { failureRedirect: "/?error=google_failed" }),
+    (req, res) => {
+      // Successful authentication
+      const user = req.user as any;
+      if (user) {
+        const safeUser = {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          isAdmin: user.isAdmin,
+          avatarUrl: user.avatarUrl,
+        };
+        const encodedUser = Buffer.from(JSON.stringify(safeUser)).toString("base64");
+        // Redirect to frontend and pass the user encoded in query string
+        res.redirect(`/?oauth_user=${encodedUser}`);
+      } else {
+        res.redirect("/?error=google_failed");
+      }
+    }
+  );
+
   // --- Profile ---
 
   app.get("/api/users/profile/:id", async (req, res) => {
@@ -241,6 +346,7 @@ export async function registerRoutes(
         username: user.username,
         email: user.email,
         isAdmin: user.isAdmin,
+        avatarUrl: user.avatarUrl,
         phone: user.phone,
         bio: user.bio,
         createdAt: user.createdAt,
@@ -318,6 +424,7 @@ export async function registerRoutes(
         packageName,
         quantity,
         totalPrice,
+        billingDetails
       } = req.body;
 
       const secret = process.env.RAZORPAY_KEY_SECRET || "";
@@ -336,6 +443,7 @@ export async function registerRoutes(
         totalPrice,
         razorpayOrderId: razorpay_order_id,
         razorpayPaymentId: razorpay_payment_id,
+        billingDetails
       });
 
       res.json({ success: true, order });
@@ -366,6 +474,50 @@ export async function registerRoutes(
       res.json(orders);
     } catch (err) {
       res.status(500).json({ message: "Error fetching orders" });
+    }
+  });
+
+  // --- Admin Endpoints ---
+
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (err) {
+      res.status(500).json({ message: "Error fetching users", error: err });
+    }
+  });
+
+  app.get("/api/admin/orders", async (req, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (err) {
+      res.status(500).json({ message: "Error fetching orders", error: err });
+    }
+  });
+
+  app.patch("/api/admin/orders/:id/status", async (req, res) => {
+    try {
+      const order = await storage.updateOrder(req.params.id, { status: req.body.status });
+      res.json(order);
+    } catch (err) {
+      res.status(500).json({ message: "Error updating order status" });
+    }
+  });
+
+  app.patch("/api/admin/orders/:id/note", async (req, res) => {
+    try {
+      const order = await storage.updateOrder(req.params.id, { ownerNote: req.body.ownerNote });
+      
+      // Emit the note update to the specific user via Socket.io
+      if (order && order.userId) {
+        io.to(`user_${order.userId}`).emit("owner_note_updated", order);
+      }
+      
+      res.json(order);
+    } catch (err) {
+      res.status(500).json({ message: "Error updating order note" });
     }
   });
 

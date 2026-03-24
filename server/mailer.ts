@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import path from "path";
 
 // Create reusable transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
@@ -97,38 +98,56 @@ export async function sendApplicationEmail(data: ApplicationData) {
 
 export async function sendOtpEmail(email: string, username: string, otp: string) {
     try {
+        const logoPath = path.resolve(import.meta.dirname, "../client/public/new_logo.jpeg");
+        
         await transporter.sendMail({
             from: `"ShopMyBarcode" <${process.env.MAIL_USER}>`,
             to: email,
             subject: `Your Password Reset OTP – ShopMyBarcode`,
+            attachments: [{
+                filename: 'new_logo.jpeg',
+                path: logoPath,
+                cid: 'logo' // same cid value as in the html img src
+            }],
             html: `
         <!DOCTYPE html>
         <html>
         <head>
           <style>
-            body { font-family: Arial, sans-serif; background: #0a0f1a; margin: 0; padding: 0; }
-            .container { max-width: 500px; margin: 30px auto; background: #141e2d; border-radius: 12px; overflow: hidden; border: 1px solid rgba(250,146,82,0.3); }
-            .header { background: linear-gradient(135deg, #f97316, #ea580c); padding: 24px; text-align: center; }
-            .header h2 { margin: 0; color: #fff; font-size: 22px; }
-            .content { padding: 32px; color: #e0e0e0; }
-            .otp-box { background: rgba(250,146,82,0.15); border: 2px solid rgba(250,146,82,0.5); border-radius: 8px; text-align: center; padding: 20px; margin: 24px 0; }
-            .otp { font-size: 40px; font-weight: bold; letter-spacing: 12px; color: #fb923c; }
-            .note { font-size: 13px; color: #9ca3af; margin-top: 16px; }
-            .footer { padding: 16px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid rgba(250,146,82,0.1); }
+            body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
+            .wrapper { width: 100%; padding: 40px 0; background-color: #f8fafc; }
+            .container { max-width: 540px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+            .header { padding: 40px 32px 20px; text-align: center; }
+            .logo { height: 50px; width: auto; margin-bottom: 24px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); }
+            .header h2 { margin: 0; color: #0f172a; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+            .content { padding: 10px 40px 40px; color: #334155; font-size: 16px; line-height: 1.6; text-align: center; }
+            .otp-box { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 24px; margin: 30px 0; box-shadow: inset 0 0 10px rgba(249, 115, 22, 0.05); }
+            .otp { font-size: 42px; font-weight: 800; letter-spacing: 12px; color: #f97316; margin: 0; padding-left: 12px; }
+            .note { font-size: 14px; color: #64748b; margin-top: 30px; line-height: 1.5; padding: 20px; background: #f1f5f9; border-radius: 8px; border: 1px solid #e2e8f0; }
+            .footer { padding: 24px; text-align: center; font-size: 13px; color: #94a3b8; background: #f8fafc; border-top: 1px solid #e2e8f0; }
           </style>
         </head>
         <body>
-          <div class="container">
-            <div class="header"><h2>🔐 Password Reset OTP</h2></div>
-            <div class="content">
-              <p>Hi <strong>${username}</strong>,</p>
-              <p>We received a request to reset your password. Use the OTP below:</p>
-              <div class="otp-box">
-                <div class="otp">${otp}</div>
+          <div class="wrapper">
+            <div class="container">
+              <div class="header">
+                <img src="cid:logo" alt="ShopMyBarcode Logo" class="logo" />
+                <h2>Password Reset OTP</h2>
               </div>
-              <p class="note">⏱ This OTP expires in <strong>10 minutes</strong>. If you did not request this, please ignore this email.</p>
+              <div class="content">
+                <p>Hi <strong style="color: #0f172a;">${username}</strong>,</p>
+                <p>We received a request to reset your password. Use the secure OTP below to proceed:</p>
+                <div class="otp-box">
+                  <div class="otp">${otp}</div>
+                </div>
+                <div class="note">
+                  This OTP expires securely in <strong>10 minutes</strong>. If you did not request this password reset, please ignore this email.
+                </div>
+              </div>
+              <div class="footer">
+                &copy; ${new Date().getFullYear()} ShopMyBarcode. All rights reserved.
+              </div>
             </div>
-            <div class="footer">© ${new Date().getFullYear()} ShopMyBarcode. All rights reserved.</div>
           </div>
         </body>
         </html>
@@ -143,39 +162,63 @@ export async function sendOtpEmail(email: string, username: string, otp: string)
 
 export async function sendVerificationEmail(email: string, username: string, token: string) {
     try {
-        const baseUrl = process.env.APP_URL || 'https://shopmybarcode.in';
+        const baseUrl = process.env.APP_URL || 'http://localhost:5001';
         const verifyLink = `${baseUrl}/verify-email?token=${token}`;
+        const logoPath = path.resolve(import.meta.dirname, "../client/public/new_logo.jpeg");
 
         await transporter.sendMail({
             from: `"ShopMyBarcode" <${process.env.MAIL_USER}>`,
             to: email,
             subject: `Verify your email – ShopMyBarcode`,
+            attachments: [{
+                filename: 'new_logo.jpeg',
+                path: logoPath,
+                cid: 'logo' // same cid value as in the html img src
+            }],
             html: `
         <!DOCTYPE html>
         <html>
         <head>
           <style>
-            body { font-family: Arial, sans-serif; background: #0a0f1a; margin: 0; padding: 0; }
-            .container { max-width: 500px; margin: 30px auto; background: #141e2d; border-radius: 12px; overflow: hidden; border: 1px solid rgba(250,146,82,0.3); }
-            .header { background: linear-gradient(135deg, #f97316, #ea580c); padding: 24px; text-align: center; }
-            .header h2 { margin: 0; color: #fff; font-size: 22px; }
-            .content { padding: 32px; color: #e0e0e0; }
-            .btn { display: block; width: fit-content; margin: 24px auto; padding: 14px 32px; background: linear-gradient(135deg, #f97316, #ea580c); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; }
-            .note { font-size: 13px; color: #9ca3af; margin-top: 16px; }
-            .footer { padding: 16px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid rgba(250,146,82,0.1); }
+            body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
+            .wrapper { width: 100%; padding: 40px 0; background-color: #f8fafc; }
+            .container { max-width: 540px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+            .header { padding: 40px 32px 20px; text-align: center; }
+            .logo { height: 50px; width: auto; margin-bottom: 24px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); }
+            .header h2 { margin: 0; color: #0f172a; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+            .content { padding: 10px 40px 40px; color: #334155; font-size: 16px; line-height: 1.6; text-align: center; }
+            .btn-wrapper { margin: 35px 0; }
+            .btn { display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #f97316, #ea580c); color: #ffffff !important; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4); text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); }
+            .note { font-size: 14px; color: #64748b; margin-top: 30px; line-height: 1.5; padding: 20px; background: #f1f5f9; border-radius: 8px; border: 1px solid #e2e8f0; }
+            .link { color: #f97316; word-break: break-all; text-decoration: none; }
+            .footer { padding: 24px; text-align: center; font-size: 13px; color: #94a3b8; background: #f8fafc; border-top: 1px solid #e2e8f0; }
           </style>
         </head>
         <body>
-          <div class="container">
-            <div class="header"><h2>✅ Verify Your Email</h2></div>
-            <div class="content">
-              <p>Hi <strong>${username}</strong>,</p>
-              <p>Welcome to ShopMyBarcode! Please click the button below to verify your email address and activate your account.</p>
-              <a href="${verifyLink}" class="btn">Verify Email</a>
-              <p class="note">If the button doesn't work, copy and paste this link:<br/><a href="${verifyLink}" style="color:#fb923c;word-break:break-all;">${verifyLink}</a></p>
-              <p class="note">⏱ This link expires in <strong>24 hours</strong>. If you did not sign up, please ignore this email.</p>
+          <div class="wrapper">
+            <div class="container">
+              <div class="header">
+                <img src="cid:logo" alt="ShopMyBarcode Logo" class="logo" />
+                <h2>Verify Your Email</h2>
+              </div>
+              <div class="content">
+                <p>Hi <strong style="color: #0f172a;">${username}</strong>,</p>
+                <p>Welcome to ShopMyBarcode! Please click the button below to verify your email address and activate your account.</p>
+                
+                <div class="btn-wrapper">
+                  <a href="${verifyLink}" class="btn">Verify Email</a>
+                </div>
+                
+                <div class="note">
+                  If the button doesn't work, copy and paste this secure link:<br/>
+                  <a href="${verifyLink}" class="link">${verifyLink}</a><br/><br/>
+                  This link will expire securely in <strong>24 hours</strong>. If you did not sign up, please disregard this email.
+                </div>
+              </div>
+              <div class="footer">
+                &copy; ${new Date().getFullYear()} ShopMyBarcode. All rights reserved.
+              </div>
             </div>
-            <div class="footer">© ${new Date().getFullYear()} ShopMyBarcode. All rights reserved.</div>
           </div>
         </body>
         </html>

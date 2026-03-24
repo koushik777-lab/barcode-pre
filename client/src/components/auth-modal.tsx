@@ -4,6 +4,7 @@ import { X, Eye, EyeOff, Loader2, CheckCircle, ArrowLeft, Mail, Lock, User, Spar
 import { useAuth } from "@/lib/auth-context";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { FcGoogle } from "react-icons/fc";
 
 type Tab = "login" | "signup" | "forgot";
 type ForgotStep = "email" | "otp" | "reset" | "done";
@@ -62,6 +63,13 @@ export function AuthModal({ open, onOpenChange, defaultTab = "login", verifiedSu
       setShowSuccessSplash(true);
     }
   }, [open, verifiedSuccess]);
+
+  // Reset tab to defaultTab when the modal opens
+  useEffect(() => {
+    if (open) {
+      setTab(defaultTab);
+    }
+  }, [open, defaultTab]);
 
   const resetAllState = () => {
     setLoginEmail(""); setLoginPassword(""); setLoginError(""); setLoginNeedsVerification(false); setLoginUnverifiedEmail(""); setResendSuccess("");
@@ -450,6 +458,24 @@ export function AuthModal({ open, onOpenChange, defaultTab = "login", verifiedSu
                             {loginLoading ? <><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</> : "Sign In"}
                           </button>
 
+                          <div className="relative py-2">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-white/10" />
+                            </div>
+                            <div className="relative flex justify-center text-xs">
+                              <span className="bg-[#121a28] px-2 text-white/30 uppercase tracking-widest font-bold">OR</span>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => window.location.href = "/api/auth/google"}
+                            className="w-full py-3 rounded-xl bg-white text-black font-semibold text-sm hover:bg-white/90 transition-all duration-200 flex items-center justify-center gap-3 shadow-md"
+                          >
+                            <FcGoogle className="h-5 w-5" />
+                            Sign in with Google
+                          </button>
+
                           <p className="text-center text-xs text-white/40">
                             Don't have an account?{" "}
                             <button type="button" onClick={() => setTab("signup")} className="text-orange-400 hover:text-orange-300 font-medium">
@@ -564,6 +590,24 @@ export function AuthModal({ open, onOpenChange, defaultTab = "login", verifiedSu
                             className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-sm hover:from-orange-400 hover:to-orange-500 transition-all duration-200 shadow-lg shadow-orange-500/30 disabled:opacity-50 flex items-center justify-center gap-2"
                           >
                             {signupLoading ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</> : "Create Account"}
+                          </button>
+
+                          <div className="relative py-2">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-white/10" />
+                            </div>
+                            <div className="relative flex justify-center text-xs">
+                              <span className="bg-[#121a28] px-2 text-white/30 uppercase tracking-widest font-bold">OR</span>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => window.location.href = "/api/auth/google"}
+                            className="w-full py-3 rounded-xl bg-white text-black font-semibold text-sm hover:bg-white/90 transition-all duration-200 flex items-center justify-center gap-3 shadow-md"
+                          >
+                            <FcGoogle className="h-5 w-5" />
+                            Sign up with Google
                           </button>
 
                           <p className="text-center text-xs text-white/40">

@@ -1,5 +1,8 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import createMemoryStore from "memorystore";
+import passport from "passport";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -34,6 +37,20 @@ export function log(message: string, source = "express") {
 
   console.log(`${formattedTime} [${source}] ${message}`);
 }
+
+const MemoryStore = createMemoryStore(session);
+app.use(session({
+  cookie: { maxAge: 86400000 },
+  store: new MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  }),
+  resave: false,
+  saveUninitialized: false,
+  secret: process.env.SESSION_SECRET || "supersecret",
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use((req, res, next) => {
   const start = Date.now();

@@ -11,7 +11,9 @@ import {
     Table,
     PlusSquare,
     PanelLeftClose,
-    PanelLeftOpen
+    PanelLeftOpen,
+    ShoppingCart,
+    Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,6 +105,18 @@ export function AdminLayout({ children, breadcrumbs = ["Home"] }: AdminLayoutPro
                         <a title="Add Product" className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/products/new") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
                             <PlusSquare size={18} className="shrink-0" />
                             {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Add Product</span>}
+                        </a>
+                    </Link>
+                    <Link href="/admin/orders">
+                        <a title="Orders" className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/orders") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
+                            <ShoppingCart size={18} className="shrink-0" />
+                            {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Orders</span>}
+                        </a>
+                    </Link>
+                    <Link href="/admin/users">
+                        <a title="Users" className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3 rounded-md text-sm font-medium transition-colors ${isActive("/admin/users") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}>
+                            <Users size={18} className="shrink-0" />
+                            {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Users</span>}
                         </a>
                     </Link>
                 </nav>

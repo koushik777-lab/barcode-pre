@@ -6,6 +6,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<IUser | null>;
   createUser(user: Partial<IUser>): Promise<IUser>;
   updateUserProfile(id: string, data: Partial<IUser>): Promise<IUser | null>;
+  getAllUsers(): Promise<IUser[]>;
 
   // Barcode methods
   createBarcode(barcode: Partial<IBarcode>): Promise<IBarcode>;
@@ -24,9 +25,14 @@ export interface IStorage {
   createOrder(order: Partial<IOrder>): Promise<IOrder>;
   getOrdersByUser(userId: string): Promise<IOrder[]>;
   getAllOrders(): Promise<IOrder[]>;
+  updateOrder(id: string, updateData: Partial<IOrder>): Promise<IOrder | null>;
 }
 
 export class MongoStorage implements IStorage {
+  async getAllUsers(): Promise<IUser[]> {
+    return User.find().sort({ createdAt: -1 });
+  }
+
   async getUser(id: string): Promise<IUser | null> {
     return User.findById(id);
   }
@@ -96,8 +102,27 @@ export class MongoStorage implements IStorage {
     return Order.find({ userId }).sort({ createdAt: -1 });
   }
 
-  async getAllOrders(): Promise<IOrder[]> {
-    return Order.find().sort({ createdAt: -1 });
+  async getAllOrders(): Promise<any[]> {
+    const orders = await Order.find().sort({ createdAt: -1 }).lean();
+    const users = await User.find().lean();
+    const userMap = new Map(users.map(u => [String(u._id), u]));
+
+    return orders.map(order => {
+      const u = userMap.get(String(order.userId));
+      return {
+        ...order,
+        user: u ? {
+          username: u.username,
+          email: u.email,
+          avatarUrl: u.avatarUrl,
+          isVerified: u.isVerified
+        } : null
+      };
+    });
+  }
+
+  async updateOrder(id: string, updateData: Partial<IOrder>): Promise<IOrder | null> {
+    return Order.findByIdAndUpdate(id, updateData, { new: true });
   }
 }
 

@@ -4,7 +4,7 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Package, Users, Plus, ShieldCheck } from "lucide-react";
+import { Package, Users, Plus, ShieldCheck, ShoppingCart } from "lucide-react";
 
 interface Barcode {
     _id: string;
@@ -25,6 +25,14 @@ export default function AdminDashboard() {
 
     const { data: applications = [] } = useQuery<Application[]>({
         queryKey: ["/api/applications"],
+    });
+
+    const { data: adminOrders = [], isLoading: loadingOrders } = useQuery<any[]>({
+        queryKey: ["/api/admin/orders"],
+    });
+
+    const { data: adminUsers = [], isLoading: loadingUsers } = useQuery<any[]>({
+        queryKey: ["/api/admin/users"],
     });
 
     const activeProducts = barcodes.filter(b => b.status === "Active").length;
@@ -81,6 +89,32 @@ export default function AdminDashboard() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-emerald-600">{liveProducts}</div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-purple-500 shadow-sm mt-4 md:mt-0">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                                <ShoppingCart size={16} /> Total Orders
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-3xl font-bold text-purple-600">
+                                {loadingOrders ? "..." : adminOrders.length}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-orange-500 shadow-sm mt-4 md:mt-0">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                                <Users size={16} /> Web-App Users
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-3xl font-bold text-orange-600">
+                                {loadingUsers ? "..." : adminUsers.length}
+                            </div>
                         </CardContent>
                     </Card>
                 </div>

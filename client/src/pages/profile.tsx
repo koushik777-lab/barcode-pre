@@ -137,9 +137,21 @@ export default function ProfilePage() {
 
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5 mb-10">
-          <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-3xl shadow-xl shadow-orange-500/30">
-            {user?.username[0].toUpperCase()}
-          </div>
+          <motion.div
+            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            className="relative h-20 w-20 rounded-2xl p-[2px] bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-600 bg-[length:200%_200%] shadow-xl shadow-orange-500/30 flex-shrink-0"
+          >
+            <div className="h-full w-full rounded-[14px] bg-background flex items-center justify-center overflow-hidden">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} alt={user.username} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-3xl">
+                  {user?.username[0].toUpperCase()}
+                </div>
+              )}
+            </div>
+          </motion.div>
           <div>
             <h1 className="text-3xl font-bold text-white">{user?.username}</h1>
             <p className="text-white/40 text-sm mt-1">{user?.email}</p>

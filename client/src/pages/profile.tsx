@@ -124,7 +124,7 @@ export default function ProfilePage() {
       <div className="orb-extra-2" />
       <Navbar />
 
-      <main className="relative z-10 pt-32 md:pt-40 pb-20 container mx-auto px-4 md:px-6 max-w-3xl flex flex-col">
+      <main className="relative z-10 pt-44 md:pt-48 pb-20 container mx-auto px-4 md:px-6 max-w-3xl flex flex-col">
         {/* Back link */}
         <div className="mb-6 md:mb-8 pt-2 w-full">
           <motion.button
@@ -138,11 +138,11 @@ export default function ProfilePage() {
         </div>
 
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 mb-10 w-full">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5 mb-10 w-full">
           <motion.div
             animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            className="relative h-20 w-20 rounded-2xl p-[2px] bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-600 bg-[length:200%_200%] shadow-xl shadow-orange-500/30 flex-shrink-0"
+            className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-2xl p-[2px] bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-600 bg-[length:200%_200%] shadow-xl shadow-orange-500/30 flex-shrink-0"
           >
             <div className="h-full w-full rounded-[14px] bg-background flex items-center justify-center overflow-hidden">
               {user?.avatarUrl ? (
@@ -154,23 +154,23 @@ export default function ProfilePage() {
               )}
             </div>
           </motion.div>
-          <div>
-            <h1 className="text-3xl font-bold text-white">{user?.username}</h1>
-            <p className="text-white/40 text-sm mt-1">{user?.email}</p>
+          <div className="min-w-0 max-w-full">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white break-words">{user?.username}</h1>
+            <p className="text-white/40 text-xs sm:text-sm mt-1 sm:mt-1.5 break-all sm:break-words">{user?.email}</p>
           </div>
         </motion.div>
 
         {/* Account Info Card */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass-premium rounded-2xl border border-white/10 p-6 mb-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass-premium rounded-2xl border border-white/10 p-5 sm:p-6 mb-6">
           <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><User className="h-4 w-4 text-orange-400" /> Account Info</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-3">
-              <Mail className="h-4 w-4 text-orange-400 shrink-0" />
-              <div>
-                <p className="text-xs text-white/40">Email (read-only)</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm text-white font-medium truncate">{user?.email}</p>
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+            <div className="flex items-start sm:items-center gap-3 bg-white/5 rounded-xl px-4 py-3 min-w-0">
+              <Mail className="h-4 w-4 text-orange-400 shrink-0 mt-0.5 sm:mt-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-white/40 mb-1 sm:mb-0">Email (read-only)</p>
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <p className="text-sm text-white font-medium truncate min-w-0 max-w-full">{user?.email}</p>
+                  <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
                     <CheckCircle2 className="h-2.5 w-2.5" /> Verified
                   </span>
                 </div>

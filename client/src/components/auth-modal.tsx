@@ -292,24 +292,30 @@ export function AuthModal({ open, onOpenChange, defaultTab = "login", verifiedSu
             className="relative w-full max-w-md z-10"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="glass-premium rounded-3xl border border-orange-500/30 overflow-hidden shadow-2xl shadow-black/50">
-              <div className="h-1 w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-600" />
+            <div className="relative glass-premium rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl shadow-orange-500/10 backdrop-blur-xl bg-background/80">
+              {/* Premium Top Glow */}
+              <div className="absolute top-0 inset-x-0 h-[100px] bg-gradient-to-b from-orange-500/10 lg:from-orange-500/20 to-transparent pointer-events-none" />
+              <div className="h-1.5 w-full bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-600 shadow-[0_0_15px_rgba(249,115,22,0.5)]" />
 
-              <div className="p-8">
+              <div className="p-8 sm:p-10 relative">
                 <button
                   onClick={handleClose}
-                  className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors text-white/50 hover:text-white"
+                  className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-colors text-white/50 hover:text-white z-10"
                 >
                   <X className="h-4 w-4" />
                 </button>
 
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center shadow-lg shadow-orange-500/30">
-                    <span className="text-white font-bold text-lg">S</span>
+                <div className="flex items-center gap-4 mb-10 pt-2">
+                  <div className="relative h-14 w-14 rounded-2xl bg-white flex items-center justify-center p-1.5 shadow-[0_0_20px_rgba(249,115,22,0.15)] ring-1 ring-white/10 overflow-hidden group">
+                    <img 
+                      src="/new_logo.jpeg" 
+                      alt="ShopMyBarcode Logo" 
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
+                    />
                   </div>
                   <div>
-                    <p className="font-bold text-white text-sm">ShopMyBarcode</p>
-                    <p className="text-white/40 text-xs">Official Retail Codes</p>
+                    <h2 className="text-xl font-heading font-bold text-white tracking-tight leading-none mb-1 shadow-sm">ShopMyBarcode</h2>
+                    <p className="text-orange-400 text-[10px] uppercase tracking-widest font-bold">Official Retail Codes</p>
                   </div>
                 </div>
 

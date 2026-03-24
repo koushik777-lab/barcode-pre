@@ -124,19 +124,21 @@ export default function ProfilePage() {
       <div className="orb-extra-2" />
       <Navbar />
 
-      <main className="relative z-10 pt-32 pb-20 container mx-auto px-4 md:px-6 max-w-3xl">
+      <main className="relative z-10 pt-32 md:pt-40 pb-20 container mx-auto px-4 md:px-6 max-w-3xl flex flex-col">
         {/* Back link */}
-        <motion.button
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          onClick={() => setLocation("/dashboard")}
-          className="flex items-center gap-2 text-white/40 hover:text-white/80 text-sm mb-8 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
-        </motion.button>
+        <div className="mb-6 md:mb-8 pt-2 w-full">
+          <motion.button
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            onClick={() => setLocation("/dashboard")}
+            className="inline-flex items-center gap-2 text-white/40 hover:text-white/80 text-sm transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+          </motion.button>
+        </div>
 
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5 mb-10">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 mb-10 w-full">
           <motion.div
             animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}

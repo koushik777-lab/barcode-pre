@@ -143,36 +143,36 @@ export default function Dashboard() {
       <div className="orb-extra-2" />
       <Navbar />
 
-      <main className="relative z-10 pt-32 pb-20 container mx-auto px-4 md:px-6 max-w-6xl">
+      <main className="relative z-10 pt-32 md:pt-36 pb-20 container mx-auto px-4 md:px-6 max-w-6xl flex flex-col">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
+          className="mb-10 w-full"
         >
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center text-center sm:text-left gap-4 sm:gap-6 mb-6">
             <motion.div
               animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              className="relative h-14 w-14 rounded-2xl p-[2px] bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-600 bg-[length:200%_200%] shadow-lg shadow-orange-500/30 flex-shrink-0"
+              className="relative h-16 w-16 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-2xl p-[2px] bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-600 bg-[length:200%_200%] shadow-lg shadow-orange-500/30 flex-shrink-0"
             >
               <div className="h-full w-full rounded-[14px] bg-background flex items-center justify-center overflow-hidden">
                 {user?.avatarUrl ? (
                   <img src={user.avatarUrl} alt={user.username} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
                 ) : (
-                  <div className="h-full w-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-xl">
+                  <div className="h-full w-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-2xl sm:text-xl md:text-2xl">
                     {user?.username[0].toUpperCase()}
                   </div>
                 )}
               </div>
             </motion.div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-heading font-bold text-white">
+            <div className="max-w-[100%]">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-white break-words">
                 Welcome back, <span className="text-orange-400">{user?.username}</span>!
               </h1>
-              <p className="text-white/40 text-sm mt-1">{user?.email}</p>
+              <p className="text-white/40 text-xs sm:text-sm mt-1 sm:mt-1.5">{user?.email}</p>
             </div>
-            <Link href="/profile" className="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-xl glass-premium border border-orange-500/20 text-sm text-orange-400 hover:border-orange-500/50 hover:text-orange-300 transition-all">
+            <Link href="/profile" className="w-full sm:w-auto mt-2 sm:mt-0 sm:ml-auto flex shrink-0 items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl glass-premium border border-orange-500/20 text-sm font-medium text-orange-400 hover:border-orange-500/50 hover:bg-orange-500/10 hover:text-orange-300 transition-all">
               <UserCog className="h-4 w-4" /> Edit Profile
             </Link>
           </div>

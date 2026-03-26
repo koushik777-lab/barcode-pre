@@ -144,7 +144,7 @@ export function PremiumHero() {
                     <div className="w-3 h-3 rounded-full bg-red-500" />
                     <div className="w-3 h-3 rounded-full bg-yellow-500" />
                     <div className="w-3 h-3 rounded-full bg-green-500" />
-                    <span className="text-xs text-gray-400 ml-auto">shopmybarcode.com</span>
+                    <span className="text-xs text-gray-400 ml-auto">shopmybarcode.in</span>
                   </div>
 
                   {/* Content */}

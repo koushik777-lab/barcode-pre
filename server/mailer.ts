@@ -3,9 +3,8 @@ import nodemailer from "nodemailer";
 import path from "path";
 
 // Create reusable transporter object using the default SMTP transport
-console.log("Initializing nodemailer transporter with user:", process.env.MAIL_USER);
 if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
-    console.error("CRITICAL: MAIL_USER or MAIL_PASS is missing in environment variables!");
+    console.warn("MAIL_USER or MAIL_PASS is missing in environment variables. Email services may not function.");
 }
 
 const transporter = nodemailer.createTransport({

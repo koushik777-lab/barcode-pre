@@ -156,6 +156,7 @@ export default function Checkout() {
             toast({ title: "Payment Failed", description: verifyData.message, variant: "destructive" });
           }
         },
+        image: `${window.location.origin}/new_logo.jpeg`,
         prefill: { 
           email: billingInfo.email, 
           name: billingInfo.fullName,

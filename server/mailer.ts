@@ -1,7 +1,13 @@
+import "dotenv/config";
 import nodemailer from "nodemailer";
 import path from "path";
 
 // Create reusable transporter object using the default SMTP transport
+console.log("Initializing nodemailer transporter with user:", process.env.MAIL_USER);
+if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
+    console.error("CRITICAL: MAIL_USER or MAIL_PASS is missing in environment variables!");
+}
+
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -10,6 +16,15 @@ const transporter = nodemailer.createTransport({
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
     },
+});
+
+// Verify connection on startup
+transporter.verify((error, success) => {
+    if (error) {
+        console.error("Transporter verify error:", error);
+    } else {
+        console.log("Transporter is ready to take messages");
+    }
 });
 
 interface ApplicationData {
@@ -98,16 +113,20 @@ export async function sendApplicationEmail(data: ApplicationData) {
 
 export async function sendOtpEmail(email: string, username: string, otp: string) {
     try {
-        const logoPath = path.resolve(import.meta.dirname, "../client/public/new_logo.jpeg");
+        console.log(`Attempting to send OTP email to: ${email}`);
+        const currentDir = typeof import.meta.dirname !== 'undefined' ? import.meta.dirname : path.dirname(new URL(import.meta.url).pathname);
+        const logoPath = path.resolve(currentDir, "../client/public/new_logo.jpeg");
         
-        await transporter.sendMail({
-            from: `"ShopMyBarcode" <${process.env.MAIL_USER}>`,
+        console.log(`Using logo path: ${logoPath}`);
+
+        const info = await transporter.sendMail({
+            from: `"${process.env.MAIL_USER}" <${process.env.MAIL_USER}>`,
             to: email,
             subject: `Your Password Reset OTP – ShopMyBarcode`,
             attachments: [{
                 filename: 'new_logo.jpeg',
                 path: logoPath,
-                cid: 'logo' // same cid value as in the html img src
+                cid: 'logo'
             }],
             html: `
         <!DOCTYPE html>
@@ -153,6 +172,7 @@ export async function sendOtpEmail(email: string, username: string, otp: string)
         </html>
       `,
         });
+        console.log("OTP email sent: %s", info.messageId);
         return true;
     } catch (error) {
         console.error("Error sending OTP email:", error);
@@ -162,18 +182,24 @@ export async function sendOtpEmail(email: string, username: string, otp: string)
 
 export async function sendVerificationEmail(email: string, username: string, token: string) {
     try {
+        console.log(`Attempting to send verification email to: ${email}`);
         const baseUrl = process.env.APP_URL || 'http://localhost:5001';
         const verifyLink = `${baseUrl}/verify-email?token=${token}`;
-        const logoPath = path.resolve(import.meta.dirname, "../client/public/new_logo.jpeg");
+        
+        // Use process.cwd() as a fallback for logo path if import.meta.dirname is problematic
+        const currentDir = typeof import.meta.dirname !== 'undefined' ? import.meta.dirname : path.dirname(new URL(import.meta.url).pathname);
+        const logoPath = path.resolve(currentDir, "../client/public/new_logo.jpeg");
+        
+        console.log(`Using logo path: ${logoPath}`);
 
-        await transporter.sendMail({
-            from: `"ShopMyBarcode" <${process.env.MAIL_USER}>`,
+        const info = await transporter.sendMail({
+            from: `"${process.env.MAIL_USER}" <${process.env.MAIL_USER}>`, // Simplified from name
             to: email,
             subject: `Verify your email – ShopMyBarcode`,
             attachments: [{
                 filename: 'new_logo.jpeg',
                 path: logoPath,
-                cid: 'logo' // same cid value as in the html img src
+                cid: 'logo'
             }],
             html: `
         <!DOCTYPE html>
@@ -224,6 +250,7 @@ export async function sendVerificationEmail(email: string, username: string, tok
         </html>
       `,
         });
+        console.log("Verification email sent: %s", info.messageId);
         return true;
     } catch (error) {
         console.error("Error sending verification email:", error);

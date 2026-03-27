@@ -115,7 +115,9 @@ export async function sendApplicationEmail(data: ApplicationData) {
 
 export async function sendOtpEmail(email: string, username: string, otp: string) {
     try {
-        const currentDir = typeof import.meta.dirname !== 'undefined' ? import.meta.dirname : path.dirname(new URL(import.meta.url).pathname);
+        const currentDir = typeof __dirname !== 'undefined' 
+            ? __dirname 
+            : path.dirname(new URL(import.meta.url).pathname);
         let logoPath = path.resolve(currentDir, "../client/public/new_logo.jpeg");
         if (!fs.existsSync(logoPath)) {
             logoPath = path.resolve(currentDir, "./public/new_logo.jpeg");
@@ -194,7 +196,9 @@ export async function sendVerificationEmail(email: string, username: string, tok
         const baseUrl = process.env.APP_URL || 'http://localhost:5001';
         const verifyLink = `${baseUrl}/verify-email?token=${token}`;
         
-        const currentDir = typeof import.meta.dirname !== 'undefined' ? import.meta.dirname : path.dirname(new URL(import.meta.url).pathname);
+        const currentDir = typeof __dirname !== 'undefined' 
+            ? __dirname 
+            : path.dirname(new URL(import.meta.url).pathname);
         let logoPath = path.resolve(currentDir, "../client/public/new_logo.jpeg");
         if (!fs.existsSync(logoPath)) {
             logoPath = path.resolve(currentDir, "./public/new_logo.jpeg");

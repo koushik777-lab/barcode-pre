@@ -1,13 +1,15 @@
 import "dotenv/config";
 import nodemailer from "nodemailer";
 import path from "path";
+import fs from "fs";
+
 
 // Create reusable transporter object using the default SMTP transport
 if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
     console.warn("MAIL_USER or MAIL_PASS is missing in environment variables. Email services may not function.");
 }
 
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
@@ -37,11 +39,12 @@ interface ApplicationData {
 
 export async function sendApplicationEmail(data: ApplicationData) {
     try {
-        const receiver = process.env.MAIL_RECEIVER || "koushiksarkar741777@gmail.com";
+        const receiver = process.env.MAIL_RECEIVER || "shopmybarcode9@gmail.com";
+        const sender = process.env.MAIL_USER || "shopmybarcode9@gmail.com";
 
         // send mail with defined transport object
         const info = await transporter.sendMail({
-            from: `"Barcode Application System" <${process.env.MAIL_USER}>`, // sender address
+            from: `"ShopMyBarcode" <${sender}>`, // sender address
             to: receiver, // list of receivers
             subject: `New Barcode Application: ${data.companyName}`, // Subject line
             html: `
@@ -112,20 +115,26 @@ export async function sendApplicationEmail(data: ApplicationData) {
 
 export async function sendOtpEmail(email: string, username: string, otp: string) {
     try {
-        console.log(`Attempting to send OTP email to: ${email}`);
         const currentDir = typeof import.meta.dirname !== 'undefined' ? import.meta.dirname : path.dirname(new URL(import.meta.url).pathname);
-        const logoPath = path.resolve(currentDir, "../client/public/new_logo.jpeg");
-        
-        console.log(`Using logo path: ${logoPath}`);
+        let logoPath = path.resolve(currentDir, "../client/public/new_logo.jpeg");
+        if (!fs.existsSync(logoPath)) {
+            logoPath = path.resolve(currentDir, "./public/new_logo.jpeg");
+        }
+        if (!fs.existsSync(logoPath)) {
+            logoPath = path.resolve(process.cwd(), "client/public/new_logo.jpeg");
+        }
+
+        const sender = process.env.MAIL_USER || "shopmybarcode9@gmail.com";
 
         const info = await transporter.sendMail({
-            from: `"${process.env.MAIL_USER}" <${process.env.MAIL_USER}>`,
+            from: `"ShopMyBarcode" <${sender}>`,
             to: email,
             subject: `Your Password Reset OTP – ShopMyBarcode`,
             attachments: [{
-                filename: 'new_logo.jpeg',
-                path: logoPath,
-                cid: 'logo'
+                content: fs.readFileSync(logoPath),
+                cid: 'logo',
+                contentDisposition: 'inline',
+                filename: 'logo'
             }],
             html: `
         <!DOCTYPE html>
@@ -185,20 +194,25 @@ export async function sendVerificationEmail(email: string, username: string, tok
         const baseUrl = process.env.APP_URL || 'http://localhost:5001';
         const verifyLink = `${baseUrl}/verify-email?token=${token}`;
         
-        // Use process.cwd() as a fallback for logo path if import.meta.dirname is problematic
         const currentDir = typeof import.meta.dirname !== 'undefined' ? import.meta.dirname : path.dirname(new URL(import.meta.url).pathname);
-        const logoPath = path.resolve(currentDir, "../client/public/new_logo.jpeg");
-        
-        console.log(`Using logo path: ${logoPath}`);
+        let logoPath = path.resolve(currentDir, "../client/public/new_logo.jpeg");
+        if (!fs.existsSync(logoPath)) {
+            logoPath = path.resolve(currentDir, "./public/new_logo.jpeg");
+        }
+        if (!fs.existsSync(logoPath)) {
+            logoPath = path.resolve(process.cwd(), "client/public/new_logo.jpeg");
+        }
+
+        const sender = process.env.MAIL_USER || "shopmybarcode9@gmail.com";
 
         const info = await transporter.sendMail({
-            from: `"${process.env.MAIL_USER}" <${process.env.MAIL_USER}>`, // Simplified from name
+            from: `"ShopMyBarcode" <${sender}>`, // Unified from name
             to: email,
             subject: `Verify your email – ShopMyBarcode`,
             attachments: [{
-                filename: 'new_logo.jpeg',
-                path: logoPath,
-                cid: 'logo'
+                content: fs.readFileSync(logoPath),
+                cid: 'logo',
+                contentDisposition: 'inline',
             }],
             html: `
         <!DOCTYPE html>

@@ -82,7 +82,7 @@ export const generateInvoicePDF = async (order: Order, user: { username: string 
 
   doc.setFontSize(22);
   doc.setTextColor(30, 30, 30);
-  doc.text("MSR ASSESSMENT PRIVATE LIMITED", pageWidth - 15, 25, { align: "right" });
+  doc.text("SHOP MY BARCODE", pageWidth - 15, 25, { align: "right" });
   
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");

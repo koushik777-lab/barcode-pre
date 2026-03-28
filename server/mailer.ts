@@ -2,6 +2,7 @@ import "dotenv/config";
 import nodemailer from "nodemailer";
 import path from "path";
 import fs from "fs";
+import { generateInvoicePDF } from "./invoice";
 
 
 // Create reusable transporter object using the default SMTP transport
@@ -271,6 +272,88 @@ export async function sendVerificationEmail(email: string, username: string, tok
         return true;
     } catch (error) {
         console.error("Error sending verification email:", error);
+        return false;
+    }
+}
+
+export async function sendOrderConfirmationEmail(email: string, username: string, order: any) {
+    try {
+        const sender = process.env.MAIL_USER || "shopmybarcode9@gmail.com";
+        
+        // Generate Invoice PDF
+        const pdfBuffer = await generateInvoicePDF(order, { username });
+
+        const info = await transporter.sendMail({
+            from: `"ShopMyBarcode" <${sender}>`,
+            to: email,
+            subject: `Order Successfully Placed – ShopMyBarcode`,
+            attachments: [
+                {
+                    filename: `Invoice_${order._id.toString().slice(-6).toUpperCase()}.pdf`,
+                    content: pdfBuffer,
+                    contentType: 'application/pdf'
+                }
+            ],
+            html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
+            .wrapper { width: 100%; padding: 40px 0; background-color: #f8fafc; }
+            .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+            .header { background: #2563eb; color: #fff; padding: 40px 32px; text-align: center; }
+            .header h2 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+            .content { padding: 40px; color: #334155; font-size: 16px; line-height: 1.7; }
+            .order-details { background: #f1f5f9; border-radius: 12px; padding: 25px; margin: 25px 0; border: 1px solid #e2e8f0; }
+            .whatsapp-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 25px; margin: 25px 0; color: #166534; }
+            .footer { padding: 24px; text-align: center; font-size: 13px; color: #94a3b8; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+            h3 { color: #0f172a; margin-top: 0; }
+          </style>
+        </head>
+        <body>
+          <div class="wrapper">
+            <div class="container">
+              <div class="header">
+                <h2>Order Confirmed!</h2>
+              </div>
+              <div class="content">
+                <p>Hi <strong>${username}</strong>,</p>
+                <p>Thank you for your order! We're excited to let you know that your order has been successfully placed.</p>
+                
+                <div class="order-details">
+                  <h3 style="margin-bottom: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 10px;">Order Summary</h3>
+                  <p style="margin: 5px 0;"><strong>Package:</strong> ${order.packageName}</p>
+                  <p style="margin: 5px 0;"><strong>Quantity:</strong> ${order.quantity}</p>
+                  <p style="margin: 5px 0;"><strong>Total Amount:</strong> Rs ${order.totalPrice.toFixed(2)}</p>
+                  <p style="margin: 5px 0;"><strong>Order ID:</strong> ${order._id.toString().toUpperCase()}</p>
+                </div>
+
+                <div class="whatsapp-box">
+                  <h3 style="color: #166534;">Next Steps: Share Product Details</h3>
+                  <p>In the <strong>"My Order"</strong> section of our website, you will notice a <br/><strong>"Share Your Product Details Here"</strong> button.</p>
+                  <p>Clicking that button will allow you to contact us directly via WhatsApp to share your product information.</p>
+                </div>
+
+                <p>Please find your invoice attached to this email.</p>
+                
+                <p>Thank you for purchasing our service!</p>
+                
+                <p>Best Regards,<br/><strong>Team ShopMyBarcode</strong></p>
+              </div>
+              <div class="footer">
+                &copy; ${new Date().getFullYear()} ShopMyBarcode. All rights reserved.
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+        });
+        console.log("Order confirmation email sent: %s", info.messageId);
+        return true;
+    } catch (error) {
+        console.error("Error sending order confirmation email:", error);
         return false;
     }
 }

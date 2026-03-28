@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { BARCODE_PACKAGES, SPECIAL_PACKAGE } from "@/lib/constants";
 import { io } from "socket.io-client";
+import { generateInvoice } from "@/lib/invoice";
+import { FileDown } from "lucide-react";
 
 interface Order {
   _id: string;
@@ -20,6 +22,16 @@ interface Order {
   status: "Pending" | "Processing" | "Completed" | "Cancelled";
   ownerNote?: string;
   createdAt: string;
+  billingDetails?: {
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    gstin?: string;
+  };
 }
 
 const IconMap: Record<string, React.ReactNode> = {
@@ -85,6 +97,14 @@ export default function Dashboard() {
     fetchOrders();
 
     if (user) {
+      // Check for checkout success in URL
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("checkout") === "success") {
+        setCheckoutSuccess(true);
+        // Clear param without refresh to prevent re-triggering logic if user reloads
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+
       const socket = io();
       socket.emit("join_user_room", user.id);
       
@@ -299,6 +319,14 @@ export default function Dashboard() {
                           <span className="text-sm font-bold text-[#4ade80] tracking-wide">Share Your Product Details Here</span>
                         </a>
 
+                        <button
+                          onClick={() => generateInvoice(order, user)}
+                          className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl glass-premium border border-orange-500/30 hover:border-orange-500/80 text-orange-400 hover:bg-orange-500/10 transition-all duration-300"
+                        >
+                          <FileDown className="h-5 w-5" />
+                          <span className="text-sm font-bold tracking-wide">Get Invoice</span>
+                        </button>
+
                         {order.ownerNote && (
                           <div className="flex-1 flex items-start sm:items-center gap-3 bg-gradient-to-r from-orange-500/10 to-orange-500/0 rounded-xl p-3.5 border border-orange-500/20 shadow-inner">
                             <MessageSquare className="h-4 w-4 text-orange-400 shrink-0 mt-0.5 sm:mt-0" />
@@ -330,7 +358,18 @@ export default function Dashboard() {
                     <CheckCircle2 className="h-20 w-20 text-green-400 mx-auto mb-4" />
                   </motion.div>
                   <h3 className="text-3xl font-bold text-white mb-2">Order Placed!</h3>
-                  <p className="text-white/40">Your barcode order has been received. We'll process it shortly.</p>
+                  <p className="text-white/40 mb-8">Your barcode order has been received. We'll process it shortly.</p>
+                  
+                  <button
+                    onClick={() => {
+                      setCheckoutSuccess(false);
+                      setActiveTab("orders");
+                      fetchOrders();
+                    }}
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl shadow-xl shadow-orange-500/20 hover:from-orange-400 hover:to-orange-500 transition-all"
+                  >
+                    <Package className="h-5 w-5" /> View My Orders
+                  </button>
                 </div>
               ) : (
                 <>

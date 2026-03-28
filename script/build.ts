@@ -30,6 +30,8 @@ const allowlist = [
   "xlsx",
   "zod",
   "zod-validation-error",
+  "jspdf",
+  "jspdf-autotable",
 ];
 
 async function buildAll() {

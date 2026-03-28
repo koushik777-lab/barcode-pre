@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { connectDB } from "./db";
-import { sendApplicationEmail, sendOtpEmail, sendVerificationEmail } from "./mailer";
+import { sendApplicationEmail, sendOtpEmail, sendVerificationEmail, sendOrderConfirmationEmail } from "./mailer";
 import { hashPassword, verifyPassword } from "./auth";
 import { randomInt, randomBytes, createHmac } from "crypto";
 import { razorpay } from "./razorpay";
@@ -446,6 +446,18 @@ export async function registerRoutes(
         billingDetails
       });
 
+      // Send confirmation email (non-blocking)
+      (async () => {
+        try {
+          const user = await storage.getUser(userId);
+          if (user && user.email) {
+            await sendOrderConfirmationEmail(user.email, user.username, order);
+          }
+        } catch (err) {
+          console.error("Error sending order confirmation email:", err);
+        }
+      })();
+
       res.json({ success: true, order });
     } catch (error) {
       console.error("Payment verify error:", error);
@@ -462,6 +474,19 @@ export async function registerRoutes(
         return res.status(400).json({ success: false, message: "Missing required order fields" });
       }
       const order = await storage.createOrder({ userId, packageName, quantity: quantity || 1, totalPrice });
+      
+      // Send confirmation email (non-blocking)
+      (async () => {
+        try {
+          const user = await storage.getUser(userId);
+          if (user && user.email) {
+            await sendOrderConfirmationEmail(user.email, user.username, order);
+          }
+        } catch (err) {
+          console.error("Error sending order confirmation email:", err);
+        }
+      })();
+
       res.json({ success: true, order });
     } catch (err) {
       res.status(500).json({ success: false, message: "Error creating order", error: err });

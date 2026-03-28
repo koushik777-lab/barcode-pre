@@ -129,8 +129,29 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-8">
             <div className="flex items-center gap-6">
               {navLinks.map((link) => (
-                <Link key={link.name} href={link.href} className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-                  {link.name}
+                <Link key={link.name} href={link.href} className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors flex items-center gap-1.5 group/nav">
+                  {link.name === "LIVE PRODUCTS" ? (
+                    <>
+                      <motion.span
+                        animate={{ 
+                          scale: [1, 1.05, 1],
+                          color: ["rgba(255,255,255,0.8)", "rgba(52, 211, 153, 1)", "rgba(255,255,255,0.8)"]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        className="relative flex items-center gap-1.5"
+                      >
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                        </span>
+                        <span className="bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 group-hover/nav:border-emerald-500/40 transition-colors">
+                          {link.name}
+                        </span>
+                      </motion.span>
+                    </>
+                  ) : (
+                    link.name
+                  )}
                 </Link>
               ))}
               <Link href="/checkout" className="relative p-2 text-foreground/80 hover:text-primary transition-colors">
@@ -245,10 +266,19 @@ export function Navbar() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className="text-base font-medium text-foreground py-2 border-b border-border/50"
+                    className="text-base font-medium text-foreground py-2 border-b border-border/50 flex items-center justify-between"
                     onClick={() => setIsOpen(false)}
                   >
-                    {link.name}
+                    <span>{link.name}</span>
+                    {link.name === "LIVE PRODUCTS" && (
+                      <span className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider animate-pulse">Live Now</span>
+                      </span>
+                    )}
                   </Link>
                 ))}
                 <Link

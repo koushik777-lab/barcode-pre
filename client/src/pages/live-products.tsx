@@ -13,7 +13,7 @@ interface Barcode {
     brandName: string;
     imageUrl?: string;
     barcodeImageUrl?: string;
-    isIndexed?: boolean;
+    liveStatus?: string;
 }
 
 export default function LiveProducts() {

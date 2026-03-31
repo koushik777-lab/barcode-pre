@@ -9,7 +9,7 @@ import { Package, Users, Plus, ShieldCheck, ShoppingCart } from "lucide-react";
 interface Barcode {
     _id: string;
     status: string;
-    isIndexed?: boolean;
+    liveStatus?: string;
 }
 
 interface Application {
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
     const activeProducts = barcodes.filter(b => b.status === "Active").length;
     const inactiveProducts = barcodes.length - activeProducts;
-    const liveProducts = barcodes.filter(b => b.isIndexed).length;
+    const liveProducts = barcodes.filter(b => b.liveStatus === "LIVE").length;
 
     return (
         <AdminLayout breadcrumbs={["Home", "Dashboard"]}>

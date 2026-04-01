@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -44,6 +44,7 @@ export default function ProductTable() {
     const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState("");
     const [page, setPage] = useState(1);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const itemsPerPage = 10;
 
     const { data: barcodes = [] } = useQuery<Barcode[]>({
@@ -164,6 +165,140 @@ export default function ProductTable() {
         saveAs(new Blob([buffer]), filename);
     };
 
+    const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            const arrayBuffer = await file.arrayBuffer();
+            await workbook.xlsx.load(arrayBuffer);
+            const worksheet = workbook.getWorksheet(1);
+            if (!worksheet) {
+                toast({ title: "Error", description: "Empty Excel file", variant: "destructive" });
+                return;
+            }
+
+            // Extract brand name from filename
+            const brandName = file.name.replace(/\.[^/.]+$/, "");
+
+            const data: any[] = [];
+            let headerRowIndex = -1;
+
+            // Find header row (must contain NAME, QTY, PRISE, or BARCODE NO)
+            worksheet.eachRow((row, rowNumber) => {
+                const values = row.values as any[];
+                if (headerRowIndex === -1) {
+                    const rowText = values.join(" ").toUpperCase();
+                    if (rowText.includes("NAME") || rowText.includes("BARCODE NO")) {
+                        headerRowIndex = rowNumber;
+                    }
+                } else {
+                    // This is a data row
+                    const name = worksheet.getRow(headerRowIndex).values as any[];
+                    const rowValues = row.values as any[];
+
+                    const getVal = (val: any) => {
+                        if (val === null || val === undefined) return "";
+                        if (typeof val === 'object') {
+                            if (val.result !== undefined) return String(val.result);
+                            if (val.text !== undefined) return String(val.text);
+                            if (val.richText) return val.richText.map((t: any) => t.text).join("");
+                        }
+                        return String(val);
+                    };
+
+                    const item: any = {
+                        brandName: brandName,
+                        country: "India",
+                        language: "English",
+                        status: "Active"
+                    };
+
+                    name.forEach((header, index) => {
+                        if (!header) return;
+                        const headerStr = header.toString().toUpperCase().trim();
+                        const rawValue = rowValues[index];
+                        const value = getVal(rawValue);
+
+                        if (headerStr === "NAME") item.productName = value;
+                        else if (headerStr === "QTY") item.weight = value;
+                        else if (headerStr === "PRISE" || headerStr === "PRICE") item.price = value;
+                        else if (headerStr === "BARCODE NO") {
+                            // Clean barcode: remove parentheses, curly braces and handle scientific notation
+                            if (value) {
+                                let bc = value.trim();
+                                bc = bc.replace(/[(){}]/g, ""); // Remove ( ) { }
+                                if (bc.includes("E") || bc.includes("e")) {
+                                    const num = Number(bc);
+                                    if (!isNaN(num)) {
+                                        bc = num.toLocaleString('fullwide', { useGrouping: false });
+                                    }
+                                }
+                                item.barcode = bc;
+                            }
+                        }
+                    });
+
+                    if (!item.category) item.category = "General";
+
+                    // Support "NOTHING" for missing names if barcode exists
+                    if (item.barcode) {
+                        if (!item.productName || item.productName.trim() === "") {
+                            item.productName = "NOTHING";
+                        }
+
+                        // Generate model number
+                        const prodName = item.productName.trim();
+                        const barcode = item.barcode.trim();
+                        const firstChar = prodName.charAt(0).toUpperCase();
+                        const lastChar = prodName.charAt(prodName.length - 1).toUpperCase();
+                        const lastTwoDigits = barcode.slice(-2);
+                        item.modelNumber = `${firstChar}${lastChar}${lastTwoDigits}`;
+
+                        data.push(item);
+                    }
+                }
+            });
+
+            if (data.length === 0) {
+                toast({ title: "No Data", description: "No valid products found in Excel", variant: "destructive" });
+                return;
+            }
+
+            toast({ title: "Uploading", description: `Processing ${data.length} products...` });
+
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const item of data) {
+                try {
+                    await apiRequest("POST", "/api/barcodes", {
+                        ...item,
+                        price: item.price ? Number(item.price) : 0
+                    });
+                    successCount++;
+                } catch (err: any) {
+                    console.error("Bulk upload item failed:", item, err);
+                    failCount++;
+                    // Optional: toast individual failure if needed, but might be too many
+                }
+            }
+
+            queryClient.invalidateQueries({ queryKey: ["/api/barcodes"] });
+            toast({
+                title: "Bulk Upload Complete",
+                description: `Successfully added ${successCount} products. ${failCount > 0 ? `${failCount} failed.` : ""}`
+            });
+
+        } catch (error) {
+            console.error("Bulk upload error:", error);
+            toast({ title: "Upload Failed", description: "An error occurred while parsing the file.", variant: "destructive" });
+        } finally {
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+    };
+
     return (
         <AdminLayout breadcrumbs={["Home", "Product Details Table"]}>
             <div className="space-y-4">
@@ -189,6 +324,19 @@ export default function ProductTable() {
                                 <Plus size={16} /> Add New
                             </Button>
                         </Link>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept=".xlsx, .xls"
+                            onChange={handleBulkUpload}
+                        />
+                        <Button
+                            className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            <Plus size={16} /> Add Bulk
+                        </Button>
                     </div>
                 </div>
 

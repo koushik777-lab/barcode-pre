@@ -68,7 +68,8 @@ export class MongoStorage implements IStorage {
   }
 
   async getAllBarcodes(): Promise<IBarcode[]> {
-    return Barcode.find().sort({ createdAt: -1 });
+    // Excluding large base64 image fields to prevent memory crashes and network timeouts
+    return Barcode.find().select('-imageUrl -barcodeImageUrl').sort({ createdAt: -1 }).lean() as any;
   }
 
   async updateBarcode(id: string, barcode: Partial<IBarcode>): Promise<IBarcode | null> {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import {
     Home,
@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { io } from "socket.io-client";
+import { queryClient } from "@/lib/queryClient";
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -32,6 +34,20 @@ export function AdminLayout({ children, breadcrumbs = ["Home"] }: AdminLayoutPro
         }
         return false;
     });
+
+    useEffect(() => {
+        const socket = io();
+        socket.emit("join_admin_room");
+
+        socket.on("admin_data_changed", () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/barcodes"] });
+            queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] }); // invalidate dashboard stats if we ever add that queryKey
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     const toggleCollapse = () => {
         setIsCollapsed((prev) => {

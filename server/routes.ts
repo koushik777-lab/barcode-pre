@@ -27,6 +27,9 @@ export async function registerRoutes(
     socket.on("join_user_room", (userId) => {
       socket.join(`user_${userId}`);
     });
+    socket.on("join_admin_room", () => {
+      socket.join("admin_room");
+    });
   });
 
   // --- Auth & Session ---
@@ -582,6 +585,7 @@ export async function registerRoutes(
   app.post("/api/barcodes", async (req, res) => {
     try {
       const barcode = await storage.createBarcode(req.body);
+      io.to("admin_room").emit("admin_data_changed");
       res.json(barcode);
     } catch (err) {
       res.status(500).json({ message: "Error creating barcode", error: err });
@@ -591,6 +595,7 @@ export async function registerRoutes(
   app.put("/api/barcodes/:id", async (req, res) => {
     try {
       const barcode = await storage.updateBarcode(req.params.id, req.body);
+      io.to("admin_room").emit("admin_data_changed");
       res.json(barcode);
     } catch (err) {
       res.status(500).json({ message: "Error updating barcode", error: err });
@@ -600,6 +605,7 @@ export async function registerRoutes(
   app.delete("/api/barcodes/:id", async (req, res) => {
     try {
       await storage.deleteBarcode(req.params.id);
+      io.to("admin_room").emit("admin_data_changed");
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ message: "Error deleting barcode", error: err });

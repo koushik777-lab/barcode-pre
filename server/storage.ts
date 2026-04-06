@@ -13,6 +13,7 @@ export interface IStorage {
   getBarcodeByCode(code: string): Promise<IBarcode | null>;
   getBarcodeById(id: string): Promise<IBarcode | null>;
   getAllBarcodes(): Promise<IBarcode[]>;
+  getLiveBarcodes(): Promise<IBarcode[]>;
   updateBarcode(id: string, barcode: Partial<IBarcode>): Promise<IBarcode | null>;
   deleteBarcode(id: string): Promise<boolean>;
 
@@ -70,6 +71,18 @@ export class MongoStorage implements IStorage {
   async getAllBarcodes(): Promise<IBarcode[]> {
     // Excluding large base64 image fields to prevent memory crashes and network timeouts
     return Barcode.find().select('-imageUrl -barcodeImageUrl').sort({ createdAt: -1 }).lean() as any;
+  }
+
+  async getLiveBarcodes(): Promise<IBarcode[]> {
+    // Include products that are LIVE and have either a product image or a barcode image
+    // Only select fields needed for the gallery to minimize memory pressure
+    return Barcode.find({ 
+      liveStatus: 'LIVE',
+      imageUrl: { $exists: true, $ne: "" }
+    })
+    .select('barcode productName brandName imageUrl barcodeImageUrl liveStatus')
+    .sort({ createdAt: -1 })
+    .lean() as any;
   }
 
   async updateBarcode(id: string, barcode: Partial<IBarcode>): Promise<IBarcode | null> {

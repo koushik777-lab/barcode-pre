@@ -35,6 +35,16 @@ export async function registerRoutes(
   // --- Auth & Session ---
   await connectDB();
 
+  app.get("/api/debug-routes", (_req, res) => {
+    const routes = app._router.stack
+      .filter((r: any) => r.route)
+      .map((r: any) => ({
+        path: r.route.path,
+        methods: Object.keys(r.route.methods)
+      }));
+    res.json(routes);
+  });
+
   passport.serializeUser((user: any, done) => {
     done(null, user._id);
   });
@@ -550,6 +560,15 @@ export async function registerRoutes(
   });
 
   // --- Barcode CRUD ---
+
+  app.get("/api/v2/live-products", async (req, res) => {
+    try {
+      const barcodes = await storage.getLiveBarcodes();
+      res.json(barcodes);
+    } catch (err) {
+      res.status(500).json({ message: "Error fetching live barcodes" });
+    }
+  });
 
   app.get("/api/barcodes", async (req, res) => {
     try {

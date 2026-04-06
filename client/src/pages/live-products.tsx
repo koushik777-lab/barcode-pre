@@ -17,11 +17,15 @@ interface Barcode {
 }
 
 export default function LiveProducts() {
-    const { data: barcodes, isLoading } = useQuery<Barcode[]>({
-        queryKey: ["/api/barcodes"],
+    const { data: barcodes, isLoading, error } = useQuery<Barcode[]>({
+        queryKey: ["/api/v2/live-products"],
     });
 
-    const liveProducts = (barcodes as any[])?.filter(b => b.liveStatus === 'LIVE' && b.imageUrl && b.imageUrl.trim() !== '') || [];
+    if (error) {
+        console.error("Live products fetch error:", error);
+    }
+
+    const liveProducts = barcodes || [];
 
     return (
         <div className="min-h-screen bg-background text-foreground relative flex flex-col">

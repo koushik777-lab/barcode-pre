@@ -55,6 +55,15 @@ export async function injectSEO(html: string, originalUrl: string): Promise<stri
 
   // Standard Meta
   setMeta("name", "description", description);
+  setMeta("name", "robots", "index, follow");
+
+  // Canonical URL — critical for preventing duplicate content and indexing
+  let canonicalTag = $('link[rel="canonical"]');
+  if (canonicalTag.length) {
+    canonicalTag.attr("href", url);
+  } else {
+    $('head').append(`<link rel="canonical" href="${url}">\n`);
+  }
 
   // OpenGraph (Facebook, LinkedIn, Google sometimes)
   setMeta("property", "og:title", title);
@@ -68,6 +77,37 @@ export async function injectSEO(html: string, originalUrl: string): Promise<stri
   setMeta("name", "twitter:title", title);
   setMeta("name", "twitter:description", description);
   setMeta("name", "twitter:image", imageUrl);
+
+  // JSON-LD Product Schema — tells Google this is a real product page
+  const jsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": barcode.productName,
+    "image": imageUrl ? [imageUrl] : undefined,
+    "description": description,
+    "sku": barcode.sku || barcode.barcode,
+    "gtin13": barcode.barcode,
+    "brand": {
+      "@type": "Brand",
+      "name": barcode.brandName || "Unknown Brand"
+    },
+    "url": url,
+    "offers": {
+      "@type": "Offer",
+      "url": url,
+      "priceCurrency": "INR",
+      "price": barcode.price || 0,
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+  };
+
+  // Remove old JSON-LD if already present, then inject fresh one
+  $('script[type="application/ld+json"]').remove();
+  $('head').append(`<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n`);
+
+  // Update <title> at the end too (in case it wasn't updated)
+  $('title').text(title);
 
   return $.html();
 }

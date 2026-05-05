@@ -671,24 +671,36 @@ export async function registerRoutes(
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
       xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
-      const staticPages = ['', '/about', '/contact', '/verify', '/terms', '/privacy'];
+      // Static pages — high priority
+      const staticPages = [
+        { path: '', priority: '1.0', changefreq: 'weekly' },
+        { path: '/live-products', priority: '0.9', changefreq: 'daily' },
+        { path: '/about', priority: '0.7', changefreq: 'monthly' },
+        { path: '/contact', priority: '0.7', changefreq: 'monthly' },
+        { path: '/verify', priority: '0.5', changefreq: 'monthly' },
+        { path: '/terms', priority: '0.4', changefreq: 'yearly' },
+        { path: '/privacy', priority: '0.4', changefreq: 'yearly' },
+      ];
+
       for (const page of staticPages) {
-        xml += `  <url>\n    <loc>${baseUrl}${page}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${baseUrl}${page.path}</loc>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>\n`;
       }
 
+      // All barcode pages — highest priority for individual product pages
       for (const b of barcodes) {
-        if (b.status === 'Active') {
-          let dateStr = new Date().toISOString();
-          if (b.createdAt) {
-            dateStr = new Date(b.createdAt).toISOString();
-          }
-          xml += `  <url>\n    <loc>${baseUrl}/barcode/${b.barcode}</loc>\n    <lastmod>${dateStr}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
+        let dateStr = new Date().toISOString();
+        if (b.createdAt) {
+          dateStr = new Date(b.createdAt).toISOString();
         }
+        // Include ALL barcodes in sitemap so Google can find them
+        // The server will return 404 for deleted ones, which is correct behavior
+        xml += `  <url>\n    <loc>${baseUrl}/barcode/${b.barcode}</loc>\n    <lastmod>${dateStr}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
       }
 
       xml += `</urlset>`;
 
       res.header('Content-Type', 'application/xml');
+      res.header('Cache-Control', 'public, max-age=3600'); // Cache 1 hour
       res.send(xml);
     } catch (err) {
       res.status(500).send("Error generating sitemap");

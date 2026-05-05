@@ -70,9 +70,15 @@ export default function LiveProducts() {
                                     delay={i * 0.05}
                                     className="break-inside-avoid"
                                 >
+                                    {/* 
+                                      CRITICAL SEO FIX: Use a real <Link> (anchor tag) as the wrapper.
+                                      Googlebot cannot follow JavaScript onClick handlers, so without this
+                                      link, all barcode pages become "orphan pages" that Google refuses to index.
+                                      The onClick for "View on Google" is kept on an inner element.
+                                    */}
+                                    <Link href={`/barcode/${product.barcode}`}>
                                     <div
                                         className="relative rounded-2xl p-[2px] overflow-hidden group hover:shadow-[0_0_30px_rgba(250,146,82,0.3)] transition-all duration-300 cursor-pointer"
-                                        onClick={() => window.open(`https://www.google.com/search?q=${product.barcode}`, '_blank')}
                                     >
                                         <div className="animated-border-bg" />
 
@@ -84,7 +90,7 @@ export default function LiveProducts() {
                                                     <div className="w-16 h-16 rounded-full bg-orange-500/20 flex items-center justify-center mb-3 border border-orange-500/50">
                                                         <Search className="w-8 h-8 text-orange-400" />
                                                     </div>
-                                                    <span className="text-white font-bold text-lg text-glow">View on Google</span>
+                                                    <span className="text-white font-bold text-lg text-glow">View Details</span>
                                                 </div>
                                             </div>
 
@@ -133,6 +139,7 @@ export default function LiveProducts() {
 
                                         </div>
                                     </div>
+                                    </Link>
                                 </AnimatedSection>
                             ))}
                         </div>

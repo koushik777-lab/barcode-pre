@@ -712,5 +712,22 @@ export async function registerRoutes(
     res.send("google-site-verification: google3654bafa8a07822d.html");
   });
 
+  // Serve robots.txt directly from server so it's always accessible
+  app.get("/robots.txt", (req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache 24 hours
+    res.send(`# robots.txt for shopmybarcode.in
+User-agent: *
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://shopmybarcode.in/sitemap.xml`);
+  });
+
   return httpServer;
 }

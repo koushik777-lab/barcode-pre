@@ -1,0 +1,20 @@
+# robots.txt for shopmybarcode.in
+# Allow all search engine crawlers
+
+User-agent: *
+Allow: /
+
+# Allow Googlebot specifically (redundant but explicit)
+User-agent: Googlebot
+Allow: /
+
+# Block admin pages from indexing (they shouldn't appear in search)
+Disallow: /admin/
+Disallow: /admin/dashboard
+Disallow: /admin/products
+Disallow: /admin/users
+Disallow: /admin/orders
+Disallow: /api/
+
+# Sitemap location — tells Google exactly where your sitemap is
+Sitemap: https://shopmybarcode.in/sitemap.xml
